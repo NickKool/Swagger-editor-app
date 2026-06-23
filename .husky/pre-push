@@ -1,0 +1,12 @@
+npm run lint
+
+npx branch-name-lint --pattern "^(init|feat|fix|chore|style|docs|refactor)/[a-zA-Z0-9_-]" --error "Branch name must match: init|feat|fix|chore|style|docs|refactor/[a-zA-Z0-9_-]" || {
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    if [[ "$current_branch" == "main" || "$current_branch" == "develop" ]]; then
+        echo "Branch $current_branch is allowed (exception)"
+        exit 0
+    fi
+    exit 1
+}
+
+echo "Branch name is correct"

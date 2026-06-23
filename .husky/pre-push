@@ -1,12 +1,25 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-npx branch-name-lint || {
-    current_branch=$(git rev-parse --abbrev-ref HEAD)
-    if [[ "$current_branch" == "main" || "$current_branch" == "develop" ]]; then
-        echo "Branch $current_branch is allowed (exception)"
-        exit 0
-    fi
+npm run lint || exit 1
+
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+if [[ "$current_branch" == "main" || "$current_branch" == "develop" ]]; then
+    echo "Branch $current_branch is allowed (exception)"
+    exit 0
+fi
+
+pattern="^(init|feature|hotfix|chore|style|docs|refactor)/[a-zA-Z0-9_-]+$"
+
+if [[ ! $current_branch =~ $pattern ]]; then
+    echo "======================================================================="
+    echo " ERROR: Invalid branch name: '$current_branch'"
+    echo " Format must be: prefix/branch-name"
+    echo " Allowed prefixes: init | feature | hotfix | chore | style | docs | refactor"
+    echo " Example: feature/user-login"
+    echo "======================================================================="
     exit 1
-}
+fi
 
 echo "Branch name is correct"
+exit 0

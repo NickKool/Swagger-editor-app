@@ -15,8 +15,8 @@ if [[ ! $current_branch =~ $pattern ]]; then
     echo "======================================================================="
     echo " ERROR: Invalid branch name: '$current_branch'"
     echo " Format must be: prefix/branch-name"
-    echo " Allowed prefixes: init | feature | hotfix | chore | style | docs | refactor"
-    echo " Example: feature/user-login"
+    echo " Allowed prefixes: init | feat | fix | chore | style | docs | refactor"
+    echo " Example: feat/user-login"
     echo "======================================================================="
     exit 1
 fi

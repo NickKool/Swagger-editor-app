@@ -3,6 +3,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
 import { isValidAppLocale } from '@/i18n/locales';
+import LanguageSelector from '@/components/LanguageSelector/LanguageSelector';
 
 interface LocaleLayoutProps {
   children: React.ReactNode;
@@ -20,6 +21,9 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
+      <header>
+        <LanguageSelector />
+      </header>
       {children}
     </NextIntlClientProvider>
   );

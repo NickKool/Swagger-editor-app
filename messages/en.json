@@ -1,0 +1,10 @@
+{
+  "NotFoundPage": {
+    "page404": "Page 404",
+    "pageNotFound": "Page Not Found",
+    "return": "Return"
+  },
+  "HomePage": {
+    "content": "Stub Content"
+  }
+}

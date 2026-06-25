@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { Public_Sans, Space_Grotesk } from 'next/font/google';
+
 import { cn } from '@/lib/utils';
+import { ThemeProvider } from '@/components/theme/ThemeProvider/ThemeProvider';
+
 import './globals.css';
 
 const spaceGroteskHeading = Space_Grotesk({ subsets: ['latin'], variable: '--font-heading' });
@@ -30,8 +33,18 @@ export default function RootLayout({
         publicSans.variable,
         spaceGroteskHeading.variable,
       )}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

@@ -41,6 +41,7 @@ export default function LanguageSelector() {
         <Button variant="outline" size="sm" className="gap-2 h-9 unselectable" disabled={isPending}>
           <Languages className="h-4 w-4 text-muted-foreground" />
           <span className="hidden sm:inline">{isPending ? <Loader /> : locale.toUpperCase()}</span>
+          <span className="sr-only">{t('selectLanguage')}</span>
         </Button>
       </DropdownMenuTrigger>
 

@@ -2,6 +2,12 @@
   "components": {
     "LanguageSelector": {
       "selectLanguage": "Select Language"
+    },
+    "ThemeSelector": {
+      "selectTheme": "Select Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
     }
   },
   "pages": {

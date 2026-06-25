@@ -21,7 +21,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <header>
+      <header className="p-2">
         <LanguageSelector />
       </header>
       {children}

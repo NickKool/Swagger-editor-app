@@ -8,6 +8,14 @@
       "light": "Light",
       "dark": "Dark",
       "system": "System"
+    },
+    "Header": {
+      "signIn": "Sign In",
+      "signUp": "Sign Up",
+      "about": "About Us"
+    },
+    "Footer": {
+      "about": "About Us"
     }
   },
   "pages": {

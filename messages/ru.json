@@ -1,10 +1,23 @@
 {
-  "NotFoundPage": {
-    "page404": "Страница 404",
-    "pageNotFound": "Страница не найдена",
-    "return": "На главную"
+  "components": {
+    "LanguageSelector": {
+      "selectLanguage": "Выбрать язык"
+    },
+    "ThemeSelector": {
+      "selectTheme": "Выбрать тему",
+      "light": "Светлая",
+      "dark": "Тёмная",
+      "system": "Системная"
+    }
   },
-  "HomePage": {
-    "content": "Содержимое-заглушка"
+  "pages": {
+    "NotFoundPage": {
+      "page404": "Страница 404",
+      "pageNotFound": "Страница не найдена",
+      "return": "На главную"
+    },
+    "HomePage": {
+      "content": "Содержимое-заглушка"
+    }
   }
 }

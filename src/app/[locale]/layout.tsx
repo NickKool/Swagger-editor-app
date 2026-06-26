@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 
 import { isValidAppLocale } from '@/i18n/locales';
 import LanguageSelector from '@/components/LanguageSelector/LanguageSelector';
+import { ThemeSelector } from '@/components/theme/ThemeSelector/ThemeSelector';
 
 interface LocaleLayoutProps {
   children: React.ReactNode;
@@ -21,8 +22,9 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <header>
+      <header className="flex gap-2 p-2">
         <LanguageSelector />
+        <ThemeSelector />
       </header>
       {children}
     </NextIntlClientProvider>

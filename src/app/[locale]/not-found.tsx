@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 
 export default function NotFoundPage() {
-  const t = useTranslations('NotFoundPage');
+  const t = useTranslations('pages.NotFoundPage');
 
   return (
     <section>

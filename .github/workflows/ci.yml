@@ -1,0 +1,57 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'develop'
+      - 'init/**'
+      - 'feat/**'
+      - 'fix/**'
+      - 'chore/**'
+      - 'style/**'
+      - 'docs/**'
+      - 'refactor/**'
+      - 'test/**'
+      - 'perf/**'
+      - 'ci/**'
+  pull_request:
+    branches:
+      - 'main'
+      - 'develop'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integrity-check:
+    name: Lint, Format and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+        env:
+          HUSKY: 0
+
+      - name: Verify Prettier Code Style
+        run: npx prettier --check .
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run Vitest Suite with Coverage
+        run: npm run test:coverage
+
+      - name: Verify Production Next.js Build
+        run: npm run build

@@ -16,7 +16,9 @@ export default function Header() {
   return (
     <header className="w-full p-5 flex justify-between items-center border-b sticky top-0">
       <div className="flex gap-4 items-center">
-        <Image src={logo} alt="Logo" width={70} height={70} loading="eager" />
+        <Link href="/">
+          <Image src={logo} alt="Logo" width={70} height={70} loading="eager" />
+        </Link>
         <Button variant="outline">
           <Link href="/about">{t('about')}</Link>
         </Button>

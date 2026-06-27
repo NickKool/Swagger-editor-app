@@ -24,9 +24,10 @@ export default defineConfig({
         'src/constants/**/*.{js,ts}',
         'src/proxy.{js,ts}',
         'src/vitest.setup.{js,ts}',
-        'src/components/ui/**/*.{js,ts}',
         'src/**/*.d.ts',
         '.next/**',
+        // These are ready-made components from the shadcn library
+        'src/components/ui/**/*.{js,ts}',
       ],
       thresholds: {
         statements: 80,

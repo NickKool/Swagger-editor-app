@@ -4,7 +4,7 @@ export default {
     'type-enum': [
       2,
       'always',
-      ['init', 'feat', 'fix', 'docs', 'style', 'refactor', 'chore', 'test', 'perf'],
+      ['init', 'feat', 'fix', 'docs', 'style', 'refactor', 'chore', 'test', 'perf', 'ci'],
     ],
     'subject-case': [2, 'never', ['start-case', 'pascal-case', 'upper-case']],
     'subject-empty': [2, 'never'],

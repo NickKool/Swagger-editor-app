@@ -9,13 +9,13 @@ if [[ "$current_branch" == "main" || "$current_branch" == "develop" ]]; then
     exit 0
 fi
 
-pattern="^(init|feat|fix|chore|style|docs|refactor|test|perf)/[a-zA-Z0-9_-]+$"
+pattern="^(init|feat|fix|chore|style|docs|refactor|test|perf|ci)/[a-zA-Z0-9_-]+$"
 
 if [[ ! $current_branch =~ $pattern ]]; then
     echo "======================================================================="
     echo " ERROR: Invalid branch name: '$current_branch'"
     echo " Format must be: prefix/branch-name"
-    echo " Allowed prefixes: init | feat | fix | chore | style | docs | refactor | test | perf"
+    echo " Allowed prefixes: init | feat | fix | chore | style | docs | refactor | test | perf | ci"
     echo " Example: feat/user-login"
     echo "======================================================================="
     exit 1

@@ -53,6 +53,7 @@ describe('Firebase Client Initialization', () => {
     expect(initializeApp).toHaveBeenCalledWith(
       expect.objectContaining({
         apiKey: 'BUILD_PLACEHOLDER',
+        projectId: 'BUILD_PLACEHOLDER_ID',
       }),
     );
   });

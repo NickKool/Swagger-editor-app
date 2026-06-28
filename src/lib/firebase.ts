@@ -22,7 +22,10 @@ if (getApps().length > 0) {
 } else if (hasValidKey) {
   app = initializeApp(firebaseConfig);
 } else {
-  app = initializeApp({ apiKey: 'BUILD_PLACEHOLDER' });
+  app = initializeApp({
+    apiKey: 'BUILD_PLACEHOLDER',
+    projectId: 'BUILD_PLACEHOLDER_ID',
+  });
 }
 
 export const auth: Auth = getAuth(app);

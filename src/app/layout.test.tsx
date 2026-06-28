@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { ComponentProps } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 import RootLayout, { metadata } from './layout';
 import ThemeProvider from '@/components/theme/ThemeProvider/ThemeProvider';
 
@@ -13,6 +13,12 @@ vi.mock('@/components/theme/ThemeProvider/ThemeProvider', () => ({
     >
       {children}
     </div>
+  ),
+}));
+
+vi.mock('@/context/AuthContext', () => ({
+  AuthProvider: ({ children }: { children: ReactNode }) => (
+    <div data-testid="mocked-auth-provider">{children}</div>
   ),
 }));
 
@@ -35,8 +41,13 @@ describe('RootLayout Component', () => {
     expect(themeProvider).toHaveAttribute('data-attribute', 'class');
     expect(themeProvider).toHaveAttribute('data-default-theme', 'system');
 
+    const authProvider = screen.getByTestId('mocked-auth-provider');
+    expect(authProvider).toBeInTheDocument();
+    expect(themeProvider).toContainElement(authProvider);
+
     const mainContent = screen.getByTestId('layout-children');
     expect(mainContent).toBeInTheDocument();
     expect(mainContent).toHaveTextContent('App View');
+    expect(authProvider).toContainElement(mainContent);
   });
 });

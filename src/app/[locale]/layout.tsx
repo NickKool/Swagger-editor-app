@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 
 import { isValidAppLocale } from '@/i18n/locales';
 import LanguageSelector from '@/components/LanguageSelector/LanguageSelector';
-import { ThemeSelector } from '@/components/theme/ThemeSelector/ThemeSelector';
+import ThemeSelector from '@/components/theme/ThemeSelector/ThemeSelector';
 
 interface LocaleLayoutProps {
   children: React.ReactNode;

@@ -15,6 +15,7 @@ export default tseslint.config(
       '**/*.spec.ts',
       '**/__tests__/**',
       '**/test/**',
+      'coverage/**',
     ],
   },
   {

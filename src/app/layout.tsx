@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Public_Sans, Space_Grotesk } from 'next/font/google';
 
 import { cn } from '@/lib/utils';
-import { ThemeProvider } from '@/components/theme/ThemeProvider/ThemeProvider';
+import ThemeProvider from '@/components/theme/ThemeProvider/ThemeProvider';
 
 import './globals.css';
 

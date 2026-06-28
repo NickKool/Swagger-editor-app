@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { FirebaseApp } from 'firebase/app';
 
 vi.mock('firebase/app', () => {
@@ -18,19 +18,45 @@ vi.mock('firebase/firestore', () => ({
 }));
 
 describe('Firebase Client Initialization', () => {
+  const originalEnv = process.env;
+
   beforeEach(() => {
     vi.resetModules();
     vi.clearAllMocks();
+
+    process.env = { ...originalEnv };
   });
 
-  it('should initialize Firebase from scratch when no apps are running', async () => {
+  afterEach(() => {
+    process.env = originalEnv;
+  });
+
+  it('should initialize Firebase from scratch when no apps are running and API key is present', async () => {
     const { getApps, initializeApp } = await import('firebase/app');
+
+    process.env.NEXT_PUBLIC_FIREBASE_API_KEY = 'AIzaSyFakeKey123';
 
     vi.mocked(getApps).mockReturnValue([]);
 
     await import('./firebase');
 
     expect(initializeApp).toHaveBeenCalledTimes(1);
+  });
+
+  it('should fallback to build placeholder key during static build prerendering if key is missing', async () => {
+    const { getApps, initializeApp } = await import('firebase/app');
+
+    delete process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    vi.mocked(getApps).mockReturnValue([]);
+
+    await import('./firebase');
+
+    expect(initializeApp).toHaveBeenCalledTimes(1);
+    expect(initializeApp).toHaveBeenCalledWith(
+      expect.objectContaining({
+        apiKey: 'BUILD_PLACEHOLDER',
+      }),
+    );
   });
 
   it('should reuse the existing app instance and NOT call initializeApp again', async () => {

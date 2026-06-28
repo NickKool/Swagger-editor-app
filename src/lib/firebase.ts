@@ -11,7 +11,18 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app: FirebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+const isClient = typeof window !== 'undefined';
+const hasKey = !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+
+let app: FirebaseApp;
+
+if (getApps().length > 0) {
+  app = getApp();
+} else if (hasKey || isClient) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = initializeApp({ apiKey: 'BUILD_PLACEHOLDER' });
+}
 
 export const auth: Auth = getAuth(app);
 export const db: Firestore = getFirestore(app);

@@ -18,12 +18,11 @@ vi.mock('firebase/firestore', () => ({
 }));
 
 describe('Firebase Client Initialization', () => {
-  const originalEnv = process.env;
+  const originalEnv = { ...process.env };
 
   beforeEach(() => {
-    vi.resetModules();
     vi.clearAllMocks();
-
+    vi.resetModules();
     process.env = { ...originalEnv };
   });
 
@@ -35,7 +34,6 @@ describe('Firebase Client Initialization', () => {
     const { getApps, initializeApp } = await import('firebase/app');
 
     process.env.NEXT_PUBLIC_FIREBASE_API_KEY = 'AIzaSyFakeKey123';
-
     vi.mocked(getApps).mockReturnValue([]);
 
     await import('./firebase');
@@ -46,7 +44,7 @@ describe('Firebase Client Initialization', () => {
   it('should fallback to build placeholder key during static build prerendering if key is missing', async () => {
     const { getApps, initializeApp } = await import('firebase/app');
 
-    delete process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    process.env.NEXT_PUBLIC_FIREBASE_API_KEY = '';
     vi.mocked(getApps).mockReturnValue([]);
 
     await import('./firebase');
@@ -61,7 +59,6 @@ describe('Firebase Client Initialization', () => {
 
   it('should reuse the existing app instance and NOT call initializeApp again', async () => {
     const { getApps, initializeApp, getApp } = await import('firebase/app');
-
     const mockApp: Partial<FirebaseApp> = { name: '[DEFAULT]' };
 
     vi.mocked(getApps).mockReturnValue([mockApp as FirebaseApp]);

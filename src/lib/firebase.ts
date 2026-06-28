@@ -11,14 +11,15 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const isClient = typeof window !== 'undefined';
-const hasKey = !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+const hasValidKey =
+  typeof process.env.NEXT_PUBLIC_FIREBASE_API_KEY === 'string' &&
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY.trim().length > 0;
 
 let app: FirebaseApp;
 
 if (getApps().length > 0) {
   app = getApp();
-} else if (hasKey || isClient) {
+} else if (hasValidKey) {
   app = initializeApp(firebaseConfig);
 } else {
   app = initializeApp({ apiKey: 'BUILD_PLACEHOLDER' });

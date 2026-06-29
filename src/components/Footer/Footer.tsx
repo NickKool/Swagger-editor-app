@@ -3,18 +3,18 @@
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
-import { useState } from 'react';
 
 import lightGhLogo from '@/../public/light-gh-logo.webp';
 import darkGhLogo from '@/../public/dark-gh-logo.webp';
 
 import { AUTHORS } from '@/constants/authors';
 import Image from 'next/image';
+import { useMounted } from '@/hooks/useMounted';
 
 export default function Footer() {
   const t = useTranslations('components.Footer');
   const { resolvedTheme } = useTheme();
-  const [mounted] = useState(() => typeof window !== 'undefined');
+  const mounted = useMounted();
 
   const logo = !mounted ? lightGhLogo : resolvedTheme === 'dark' ? lightGhLogo : darkGhLogo;
 

@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import LanguageSelector from '../LanguageSelector/LanguageSelector';
-import { ThemeSelector } from '../theme/ThemeSelector/ThemeSelector';
+import ThemeSelector from '../theme/ThemeSelector/ThemeSelector';
 import { Button } from '../ui/button';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';

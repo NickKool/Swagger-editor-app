@@ -9,6 +9,8 @@ export const PROJECT_TECHNOLOGIES = [
   'Vercel',
 ] as const;
 
+export const RS_SCHOOL_LINK = 'https://rs.school';
+
 export const TEAM = [
   {
     id: 1,

@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { PROJECT_TECHNOLOGIES, TEAM } from '@/constants/about';
+import { PROJECT_TECHNOLOGIES, RS_SCHOOL_LINK, TEAM } from '@/constants/about';
 
 export default function AboutPage() {
   const t = useTranslations('pages.AboutPage');
@@ -35,7 +35,7 @@ export default function AboutPage() {
               <strong>{t('rsschool')}</strong> {t('rsschoolDescription')}
             </p>
             <Button asChild variant="outline" className="w-fill sm:w-min">
-              <Link href="https://rs.school" target="_blank" rel="noreferrer">
+              <Link href={RS_SCHOOL_LINK} target="_blank" rel="noreferrer">
                 {t('rsschoolJoin')} <ExternalLink className="ml-2 h-4 w-4" />
               </Link>
             </Button>

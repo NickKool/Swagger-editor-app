@@ -3,7 +3,6 @@ import { Public_Sans, Space_Grotesk } from 'next/font/google';
 
 import { cn } from '@/lib/utils';
 import ThemeProvider from '@/components/theme/ThemeProvider/ThemeProvider';
-import { AuthProvider } from '@/context/AuthContext';
 
 import './globals.css';
 
@@ -43,7 +42,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>{children}</AuthProvider>
+          {children}
         </ThemeProvider>
       </body>
     </html>

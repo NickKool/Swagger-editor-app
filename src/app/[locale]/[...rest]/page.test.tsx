@@ -1,10 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import CatchRest from './page';
-import { mockNotFound } from '@/__mocks__/next-navigation';
+import { mockRedirect } from '@/__mocks__/next-navigation';
+
+mockRedirect.mockImplementation((url: string) => {
+  throw new Error(`Redirected to ${url}`);
+});
 
 describe('CatchRest Component', () => {
-  it('should trigger notFound execution when rendered', () => {
-    expect(() => CatchRest()).toThrow('NEXT_NOT_FOUND');
-    expect(mockNotFound).toHaveBeenCalled();
+  it('should redirect to localized 404 page', async () => {
+    const mockParams = Promise.resolve({ locale: 'en' });
+
+    await expect(CatchRest({ params: mockParams })).rejects.toThrow('Redirected to /en/404');
+    expect(mockRedirect).toHaveBeenCalledWith('/en/404');
   });
 });

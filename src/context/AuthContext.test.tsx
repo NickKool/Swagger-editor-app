@@ -1,53 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { AuthProvider, useAuth } from './AuthContext';
-import { onAuthStateChanged, signOut, User } from 'firebase/auth';
-import { useRouter, usePathname } from 'next/navigation';
+import type { User } from 'firebase/auth';
+import { mockPush, usePathname } from '@/__mocks__/i18n-navigation';
+import { mockOnAuthStateChanged, mockSignOut } from '@/__mocks__/firebase-app';
 
-vi.mock('next/navigation', () => ({
-  useRouter: vi.fn(),
-  usePathname: vi.fn(),
-}));
-
-vi.mock('firebase/auth', () => ({
-  getAuth: vi.fn(),
-  onAuthStateChanged: vi.fn(),
-  signOut: vi.fn(() => Promise.resolve()),
-}));
-
-vi.mock('@/lib/firebase', () => ({
-  auth: {},
-  db: {},
-}));
-
-const TestingConsumerComponent = () => {
-  const { user, logout } = useAuth();
-  return (
-    <div>
-      <span data-testid="user-email">{user ? user.email : 'Guest'}</span>
-      <button data-testid="logout-btn" onClick={logout}>
-        Logout
-      </button>
-    </div>
-  );
-};
-
-describe('AuthContext and AuthProvider', () => {
-  const mockPush = vi.fn();
-
+describe('AuthContext and AuthProvider Workflows', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-
-    const mockRouter: Partial<ReturnType<typeof useRouter>> = {
-      push: mockPush,
-    };
-
-    vi.mocked(useRouter).mockReturnValue(mockRouter as ReturnType<typeof useRouter>);
+    vi.resetModules();
+    mockPush.mockClear();
+    mockOnAuthStateChanged.mockReset();
+    mockSignOut.mockClear();
     vi.mocked(usePathname).mockReturnValue('/');
   });
 
-  it('should render the loading spinner initially while verifying session', () => {
-    vi.mocked(onAuthStateChanged).mockImplementation(() => vi.fn());
+  it('should render the loading spinner initially while verifying session', async () => {
+    mockOnAuthStateChanged.mockImplementation(() => vi.fn());
+
+    const { AuthProvider } = await import('./AuthContext');
 
     render(
       <AuthProvider>
@@ -59,11 +28,13 @@ describe('AuthContext and AuthProvider', () => {
     expect(screen.queryByTestId('child-content')).not.toBeInTheDocument();
   });
 
-  it('should render children elements when user is a guest (not authenticated)', async () => {
-    vi.mocked(onAuthStateChanged).mockImplementation((_auth, callback) => {
-      (callback as (user: null) => void)(null);
+  it('should render children elements when user is a guest', async () => {
+    mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
+      callback(null);
       return vi.fn();
     });
+
+    const { AuthProvider } = await import('./AuthContext');
 
     render(
       <AuthProvider>
@@ -80,43 +51,62 @@ describe('AuthContext and AuthProvider', () => {
   it('should trigger redirect to root route if authenticated user visits auth pages', async () => {
     const mockUser: Partial<User> = { email: 'test@example.com', uid: '12345' };
 
-    vi.mocked(onAuthStateChanged).mockImplementation((_auth, callback) => {
-      (callback as (user: User) => void)(mockUser as User);
+    vi.mocked(usePathname).mockReturnValue('/register');
+
+    mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
+      callback(mockUser as User);
       return vi.fn();
     });
 
-    vi.mocked(usePathname).mockReturnValue('/en/register');
+    const { AuthProvider, useAuth } = await import('./AuthContext');
+    const TestingComponent = () => {
+      const { user } = useAuth();
+      return <span data-testid="user-email">{user?.email || 'Guest'}</span>;
+    };
 
     render(
       <AuthProvider>
-        <TestingConsumerComponent />
+        <TestingComponent />
       </AuthProvider>,
     );
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith('/');
     });
-    expect(screen.getByTestId('user-email')).toHaveTextContent('test@example.com');
+
+    const userEmailSpan = await screen.findByTestId('user-email');
+    expect(userEmailSpan).toHaveTextContent('test@example.com');
   });
 
   it('should successfully call Firebase signOut API when logging out', async () => {
     const mockUser: Partial<User> = { email: 'developer@openapi.io', uid: '999' };
 
-    vi.mocked(onAuthStateChanged).mockImplementation((_auth, callback) => {
-      (callback as (user: User) => void)(mockUser as User);
+    mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
+      callback(mockUser as User);
       return vi.fn();
     });
 
+    const { AuthProvider, useAuth } = await import('./AuthContext');
+
+    const TestingComponent = () => {
+      const { logout } = useAuth();
+      return (
+        <button data-testid="logout-btn" onClick={logout}>
+          Logout
+        </button>
+      );
+    };
+
     render(
       <AuthProvider>
-        <TestingConsumerComponent />
+        <TestingComponent />
       </AuthProvider>,
     );
 
-    const logoutButton = screen.getByTestId('logout-btn');
+    const logoutButton = await screen.findByTestId('logout-btn');
     logoutButton.click();
 
-    expect(signOut).toHaveBeenCalledTimes(1);
+    expect(mockSignOut).toHaveBeenCalledTimes(1);
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith('/');
     });

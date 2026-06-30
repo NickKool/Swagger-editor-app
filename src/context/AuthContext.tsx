@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User, signOut } from 'firebase/auth';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname } from '@/i18n/navigation';
 import { Loader } from 'lucide-react';
 
 interface AuthContextType {
@@ -20,18 +20,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
 
+  // useEffect №1: Только для управления подпиской Firebase (Срабатывает 1 раз при старте)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
-
-      if (currentUser && (pathname.includes('/login') || pathname.includes('/register'))) {
-        router.push('/');
-      }
     });
 
     return () => unsubscribe();
-  }, [pathname, router]);
+  }, []);
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (user && (pathname === '/login' || pathname === '/register')) {
+      router.push('/');
+    }
+
+    if (!user && pathname === '/history') {
+      router.push('/login');
+    }
+  }, [user, loading, pathname, router]);
 
   const logout = async () => {
     try {

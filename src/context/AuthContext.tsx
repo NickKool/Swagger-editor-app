@@ -17,10 +17,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+
   const router = useRouter();
   const pathname = usePathname();
 
-  // useEffect №1: Только для управления подпиской Firebase (Срабатывает 1 раз при старте)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (loading) return;
+    if (typeof window === 'undefined' || loading) return;
 
     if (user && (pathname === '/login' || pathname === '/register')) {
       router.push('/');

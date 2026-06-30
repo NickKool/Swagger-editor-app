@@ -22,11 +22,9 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <main>
-        <Header />
-        {children}
-        <Footer />
-      </main>
+      <Header />
+      <main>{children}</main>
+      <Footer />
     </NextIntlClientProvider>
   );
 }

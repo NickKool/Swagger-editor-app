@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { ReactNode } from 'react';
 import LocaleLayout from './layout';
 import { mockGetMessages } from '@/__mocks__/next-intl-server';
 import { mockNotFound } from '@/__mocks__/next-navigation';
@@ -10,6 +11,12 @@ vi.mock('@/components/LanguageSelector/LanguageSelector', () => ({
 
 vi.mock('@/components/theme/ThemeSelector/ThemeSelector', () => ({
   default: () => <div data-testid="mock-theme-selector">ThemeSelector</div>,
+}));
+
+vi.mock('@/context/AuthContext', () => ({
+  AuthProvider: ({ children }: { children: ReactNode }) => (
+    <div data-testid="mock-auth-provider">{children}</div>
+  ),
 }));
 
 describe('LocaleLayout Component', () => {
@@ -24,9 +31,18 @@ describe('LocaleLayout Component', () => {
 
     render(result);
 
-    expect(screen.getByTestId('mock-language-selector')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-theme-selector')).toBeInTheDocument();
-    expect(screen.getByTestId('layout-children')).toHaveTextContent('App Content');
+    const authProvider = screen.getByTestId('mock-auth-provider');
+    expect(authProvider).toBeInTheDocument();
+
+    const langSelector = screen.getByTestId('mock-language-selector');
+    const themeSelector = screen.getByTestId('mock-theme-selector');
+    expect(authProvider).toContainElement(langSelector);
+    expect(authProvider).toContainElement(themeSelector);
+
+    const mainContent = screen.getByTestId('layout-children');
+    expect(mainContent).toBeInTheDocument();
+    expect(mainContent).toHaveTextContent('App Content');
+    expect(authProvider).toContainElement(mainContent);
   });
 
   it('should trigger notFound execution when locale is invalid', async () => {

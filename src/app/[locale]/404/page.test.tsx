@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import NotFoundPage from './not-found';
+import NotFoundPage from './page';
 
 describe('NotFoundPage Component', () => {
   it('should successfully render translated content and navigation link', () => {

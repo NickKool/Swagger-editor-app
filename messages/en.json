@@ -12,9 +12,10 @@
   },
   "pages": {
     "NotFoundPage": {
-      "page404": "Page 404",
       "pageNotFound": "Page Not Found",
-      "return": "Return"
+      "notFoundDescription": "The page you are looking for doesn't exist, has been moved, or is temporarily unavailable.",
+      "goBack": "Go Back",
+      "backToHome": "Back to Home"
     },
     "HomePage": {
       "content": "Stub Content"

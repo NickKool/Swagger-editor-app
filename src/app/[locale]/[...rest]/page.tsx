@@ -1,5 +1,11 @@
-import { notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
-export default function CatchRest() {
-  notFound();
+interface Props {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function CatchRest({ params }: Props) {
+  const { locale } = await params;
+
+  redirect(`/${locale}/404`);
 }

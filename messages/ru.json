@@ -12,12 +12,36 @@
   },
   "pages": {
     "NotFoundPage": {
-      "page404": "Страница 404",
       "pageNotFound": "Страница не найдена",
-      "return": "На главную"
+      "notFoundDescription": "Страница, которую вы ищете, не существует, была перемещена или временно недоступна.",
+      "goBack": "Назад",
+      "backToHome": "На главную"
     },
     "HomePage": {
       "content": "Содержимое-заглушка"
+    },
+    "AboutPage": {
+      "aboutProject": "О проекте",
+      "aboutDescription": "Узнайте больше о приложении, курсе RS School и команде, создавшей этот продукт.",
+      "learning": "Обучение",
+      "rsschoolCourse": "Курс RS School",
+      "rsschool": "RS School",
+      "rsschoolDescription": "— это бесплатная школа программирования, организованная сообществом Rolling Scopes. Курс предлагает интенсивное обучение с упором на практические задания, поддержку менторов и командную работу над реальными проектами.",
+      "rsschoolJoin": "Присоединиться к RS School",
+      "ourTeam": "Наша команда",
+      "product": "Продукт",
+      "projectDescription": "Описание проекта",
+      "swaggerEditorApp": "Swagger Editor App",
+      "swaggerEditorAppDescription": "— это интерактивный редактор OpenAPI/Swagger и REST-клиент, созданный в качестве итогового командного проекта на курсе React в RS School. Приложение позволяет загружать, валидировать и тестировать схемы API в форматах JSON или YAML в рамках единого интерфейса.",
+      "team": {
+        "artsiomName": "Артём Бельский",
+        "artsiomContribution": "Тестирование, настройка CI, интернационализация (i18n), настройка UI-компонентов",
+        "alekseiName": "Алексей Булаш",
+        "alekseiContribution": "Архитектура проекта, инициализация проекта, настройка окружения",
+        "nikolayName": "Николай Кулешевский",
+        "nikolayContribution": "Проектирование базы данных"
+      },
+      "gitHubProfile": "Профиль GitHub"
     }
   }
 }

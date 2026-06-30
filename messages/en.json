@@ -12,12 +12,36 @@
   },
   "pages": {
     "NotFoundPage": {
-      "page404": "Page 404",
       "pageNotFound": "Page Not Found",
-      "return": "Return"
+      "notFoundDescription": "The page you are looking for doesn't exist, has been moved, or is temporarily unavailable.",
+      "goBack": "Go Back",
+      "backToHome": "Back to Home"
     },
     "HomePage": {
       "content": "Stub Content"
+    },
+    "AboutPage": {
+      "aboutProject": "About Project",
+      "aboutDescription": "Learn more about the App, the RS School course, and the team that created this product.",
+      "learning": "Learning",
+      "rsschoolCourse": "RS School Course",
+      "rsschool": "RS School",
+      "rsschoolDescription": "is a free coding school organized by the Rolling Scopes community. The course offers intensive training with an emphasis on practical assignments, mentoring support, and teamwork on real-world projects.",
+      "rsschoolJoin": "Join RS School",
+      "ourTeam": "Our Team",
+      "product": "Product",
+      "projectDescription": "Project Description",
+      "swaggerEditorApp": "Swagger Editor App",
+      "swaggerEditorAppDescription": "is an interactive OpenAPI/Swagger editor and REST client built as a final team project for the RS School React course. It allows users to load, validate, and test API schemas in JSON or YAML formats within a single, unified interface.",
+      "team": {
+        "artsiomName": "Artsiom Belski",
+        "artsiomContribution": "Testing, CI Setup, I18n, UI components setup",
+        "alekseiName": "Aleksei Bulash",
+        "alekseiContribution": "Project Architecture, Project Setup, Evironment Setup",
+        "nikolayName": "Nikolay Kuliasheuski",
+        "nikolayContribution": "Database Design"
+      },
+      "gitHubProfile": "GitHub Profile"
     }
   }
 }

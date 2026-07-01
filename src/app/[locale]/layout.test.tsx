@@ -14,7 +14,7 @@ vi.mock('@/components/theme/ThemeSelector/ThemeSelector', () => ({
 }));
 
 vi.mock('@/context/AuthContext', () => ({
-  AuthProvider: ({ children }: { children: ReactNode }) => (
+  default: ({ children }: { children: ReactNode }) => (
     <div data-testid="mock-auth-provider">{children}</div>
   ),
 }));

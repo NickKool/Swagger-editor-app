@@ -16,7 +16,7 @@ describe('AuthContext and AuthProvider Workflows', () => {
   it('should render the loading spinner initially while verifying session', async () => {
     mockOnAuthStateChanged.mockImplementation(() => vi.fn());
 
-    const { AuthProvider } = await import('./AuthContext');
+    const { default: AuthProvider } = await import('./AuthContext');
 
     render(
       <AuthProvider>
@@ -34,7 +34,7 @@ describe('AuthContext and AuthProvider Workflows', () => {
       return vi.fn();
     });
 
-    const { AuthProvider } = await import('./AuthContext');
+    const { default: AuthProvider } = await import('./AuthContext');
 
     render(
       <AuthProvider>
@@ -58,7 +58,7 @@ describe('AuthContext and AuthProvider Workflows', () => {
       return vi.fn();
     });
 
-    const { AuthProvider, useAuth } = await import('./AuthContext');
+    const { default: AuthProvider, useAuth } = await import('./AuthContext');
     const TestingComponent = () => {
       const { user } = useAuth();
       return <span data-testid="user-email">{user?.email || 'Guest'}</span>;
@@ -86,7 +86,7 @@ describe('AuthContext and AuthProvider Workflows', () => {
       return vi.fn();
     });
 
-    const { AuthProvider, useAuth } = await import('./AuthContext');
+    const { default: AuthProvider, useAuth } = await import('./AuthContext');
 
     const TestingComponent = () => {
       const { logout } = useAuth();

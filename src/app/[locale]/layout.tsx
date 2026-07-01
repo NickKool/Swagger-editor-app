@@ -3,7 +3,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
 import { isValidAppLocale } from '@/i18n/locales';
-import { AuthProvider } from '@/context/AuthContext';
+import AuthProvider from '@/context/AuthContext';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 

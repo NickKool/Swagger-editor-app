@@ -3,6 +3,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
 import { isValidAppLocale } from '@/i18n/locales';
+import AuthProvider from '@/context/AuthContext';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 
@@ -22,9 +23,11 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <Header />
-      <main className="flex flex-col flex-1">{children}</main>
-      <Footer />
+      <AuthProvider>
+        <Header />
+        <main className="flex flex-col flex-1">{children}</main>
+        <Footer />
+      </AuthProvider>
     </NextIntlClientProvider>
   );
 }

@@ -22,7 +22,7 @@ describe('RootLayout Component', () => {
     expect(metadata.description).toContain('Swagger and OpenAPI specification editor');
   });
 
-  it('should successfully render layout tree with mocked fonts and provider', () => {
+  it('should successfully render layout tree with mocked fonts and theme provider', () => {
     render(
       <RootLayout>
         <div data-testid="layout-children">App View</div>
@@ -38,5 +38,6 @@ describe('RootLayout Component', () => {
     const mainContent = screen.getByTestId('layout-children');
     expect(mainContent).toBeInTheDocument();
     expect(mainContent).toHaveTextContent('App View');
+    expect(themeProvider).toContainElement(mainContent);
   });
 });

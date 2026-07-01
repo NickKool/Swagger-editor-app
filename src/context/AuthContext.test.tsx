@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import type { User } from 'firebase/auth';
 import { mockPush, usePathname } from '@/__mocks__/i18n-navigation';
-import { mockOnAuthStateChanged, mockSignOut } from '@/__mocks__/firebase-app';
+import { mockOnAuthStateChanged, mockSignOut } from '@/__mocks__/firebase-auth';
 
 describe('AuthContext and AuthProvider Workflows', () => {
   beforeEach(() => {

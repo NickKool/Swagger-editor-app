@@ -2,6 +2,8 @@ import '@testing-library/jest-dom/vitest';
 import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 
+import '@/__mocks__/firebase-app';
+import '@/__mocks__/firebase-client';
 import '@/__mocks__/i18n-locales';
 import '@/__mocks__/i18n-navigation';
 import '@/__mocks__/i18n-routing';

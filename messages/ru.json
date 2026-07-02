@@ -17,6 +17,9 @@
     "Footer": {
       "about": "О нас",
       "developed": "Разработан:"
+    },
+    "AuthContext": {
+      "loading": "Подготовка рабочего места"
     }
   },
   "pages": {

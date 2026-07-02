@@ -17,6 +17,9 @@
     "Footer": {
       "about": "About Us",
       "developed": "Developed by:"
+    },
+    "AuthContext": {
+      "loading": "Preparing workspace"
     }
   },
   "pages": {

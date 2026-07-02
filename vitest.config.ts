@@ -21,6 +21,7 @@ export default defineConfig({
         'src/**/*.spec.{js,jsx,ts,tsx}',
         'src/__mocks__/**/*.{js,jsx,ts,tsx}',
         'src/i18n/**/*.{js,ts}',
+        'src/types/**/*.{js,ts}',
         'src/constants/**/*.{js,ts}',
         'src/proxy.{js,ts}',
         'src/vitest.setup.{js,ts}',

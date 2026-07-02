@@ -1,7 +1,14 @@
 import { vi } from 'vitest';
 import React from 'react';
 
-export const mockTranslate = vi.fn((key: string) => key);
+export const mockTranslate = Object.assign(
+  vi.fn((key: string, _values?: Record<string, string | number | Date> | undefined) => {
+    return key;
+  }),
+  {
+    has: vi.fn((_key: string) => true),
+  },
+);
 export const mockUseTranslations = vi.fn(() => mockTranslate);
 export const mockUseLocale = vi.fn(() => 'en');
 export const mockUseMessages = vi.fn(() => ({}));

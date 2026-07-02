@@ -8,9 +8,9 @@ import { ArrowDownUp } from 'lucide-react';
 
 import { useOpenApiSchemaStore } from '@/stores/OpenApiSchema.store';
 import ToggleIndicator from '@/components/ToggleIndicator/ToggleIndicator';
-import { editorDarkTheme } from './EditorTheme';
-import SaveSchemaButton from '../SaveSchemaButton/SaveSchemaButton';
+import SaveSchemaButton from '@/components/SaveSchemaButton/SaveSchemaButton';
 import { useAuth } from '@/context/AuthContext';
+import { editorDarkTheme } from './EditorTheme';
 
 export default function SchemaEditor() {
   const { user } = useAuth();

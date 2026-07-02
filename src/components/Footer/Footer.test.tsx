@@ -70,10 +70,8 @@ describe('Footer Component', () => {
     const logos = screen.getAllByRole('img', { name: 'GitHub' });
     expect(logos).toHaveLength(MOCK_AUTHORS.length * 2);
 
-    // Проверяем новые адаптивные классы для первого автора (темный логотип для светлой темы)
     expect(logos[0]).toHaveClass('hidden md:dark:hidden md:block');
 
-    // Проверяем новые адаптивные классы для первого автора (светлый логотип для темной темы)
     expect(logos[1]).toHaveClass('hidden md:dark:block');
   });
 });

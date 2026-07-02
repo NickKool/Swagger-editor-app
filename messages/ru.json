@@ -17,6 +17,14 @@
     "Footer": {
       "about": "О нас",
       "developed": "Разработан:"
+    },
+    "SchemaEditor": {},
+    "SchemaViewer": {
+      "errorTitle": "Ошибка схемы",
+      "schemaReserveTitle": "Пример API",
+      "schemaVersion": "Версия: {version}",
+      "schemaPathsDetected": "Путей обнаружено: {paths}",
+      "schemaWaiting": "Ожидание действительной схемы конфигурации OpenAPI..."
     }
   },
   "stores": {
@@ -36,9 +44,7 @@
       "goBack": "Назад",
       "backToHome": "На главную"
     },
-    "HomePage": {
-      "content": "Содержимое-заглушка"
-    },
+    "HomePage": {},
     "AboutPage": {
       "aboutProject": "О проекте",
       "aboutDescription": "Узнайте больше о приложении, курсе RS School и команде, создавшей этот продукт.",

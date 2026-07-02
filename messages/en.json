@@ -19,6 +19,16 @@
       "developed": "Developed by:"
     }
   },
+  "stores": {
+    "OpenAPISchema": {
+      "errors": {
+        "empty": "Specification cannot be empty.",
+        "conversionFailed": "Failed to parse syntax for conversion.",
+        "invalidStructure": "Schema structure validation failed.",
+        "syntaxError": "Invalid formatting or malformed document syntax."
+      }
+    }
+  },
   "pages": {
     "NotFoundPage": {
       "pageNotFound": "Page Not Found",

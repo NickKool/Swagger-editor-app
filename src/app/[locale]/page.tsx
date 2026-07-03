@@ -1,7 +1,7 @@
-import { useTranslations } from 'next-intl';
+import ResponsiveSplitter from '@/components/ResponsiveSplitter/ResponsiveSplitter';
+import SchemaEditor from '@/components/SchemaEditor/SchemaEditor';
+import SchemaViewer from '@/components/SchemaViewer/SchemaViewer';
 
 export default function HomePage() {
-  const t = useTranslations('pages.HomePage');
-
-  return <div>{t('content')}</div>;
+  return <ResponsiveSplitter leftChild={<SchemaEditor />} rightChild={<SchemaViewer />} />;
 }

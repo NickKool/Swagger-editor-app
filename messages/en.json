@@ -20,6 +20,23 @@
     },
     "AuthContext": {
       "loading": "Preparing workspace"
+    "SchemaEditor": {},
+    "SchemaViewer": {
+      "errorTitle": "Schema Error",
+      "schemaReserveTitle": "API Reference",
+      "schemaVersion": "Version: {version}",
+      "schemaPathsDetected": "Paths detected: {paths}",
+      "schemaWaiting": "Waiting for a valid OpenAPI configuration schema..."
+    }
+  },
+  "stores": {
+    "OpenAPISchema": {
+      "errors": {
+        "empty": "Specification cannot be empty.",
+        "conversionFailed": "Failed to parse syntax for conversion.",
+        "invalidStructure": "Schema structure validation failed.",
+        "syntaxError": "Invalid formatting or malformed document syntax."
+      }
     }
   },
   "pages": {
@@ -29,9 +46,7 @@
       "goBack": "Go Back",
       "backToHome": "Back to Home"
     },
-    "HomePage": {
-      "content": "Stub Content"
-    },
+    "HomePage": {},
     "AboutPage": {
       "aboutProject": "About Project",
       "aboutDescription": "Learn more about the App, the RS School course, and the team that created this product.",

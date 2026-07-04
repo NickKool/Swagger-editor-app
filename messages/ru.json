@@ -20,6 +20,23 @@
     },
     "AuthContext": {
       "loading": "Подготовка рабочего места"
+    "SchemaEditor": {},
+    "SchemaViewer": {
+      "errorTitle": "Ошибка схемы",
+      "schemaReserveTitle": "Пример API",
+      "schemaVersion": "Версия: {version}",
+      "schemaPathsDetected": "Путей обнаружено: {paths}",
+      "schemaWaiting": "Ожидание действительной схемы конфигурации OpenAPI..."
+    }
+  },
+  "stores": {
+    "OpenAPISchema": {
+      "errors": {
+        "empty": "Спецификация не может быть пустой.",
+        "conversionFailed": "Не удалось разобрать синтаксис для конвертации.",
+        "invalidStructure": "Ошибка валидации структуры схемы.",
+        "syntaxError": "Неверное форматирование или поврежденный синтаксис документа."
+      }
     }
   },
   "pages": {
@@ -29,9 +46,7 @@
       "goBack": "Назад",
       "backToHome": "На главную"
     },
-    "HomePage": {
-      "content": "Содержимое-заглушка"
-    },
+    "HomePage": {},
     "AboutPage": {
       "aboutProject": "О проекте",
       "aboutDescription": "Узнайте больше о приложении, курсе RS School и команде, создавшей этот продукт.",

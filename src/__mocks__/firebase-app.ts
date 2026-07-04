@@ -5,8 +5,19 @@ export const mockInitializeApp = vi.fn(() => ({ name: '[DEFAULT]' }) as Firebase
 export const mockGetApps = vi.fn(() => [] as FirebaseApp[]);
 export const mockGetApp = vi.fn(() => ({ name: '[DEFAULT]' }) as FirebaseApp);
 
+export class MockFirebaseError extends Error {
+  constructor(
+    public code: string,
+    message: string,
+  ) {
+    super(message);
+    this.name = 'FirebaseError';
+  }
+}
+
 vi.mock('firebase/app', () => ({
   initializeApp: mockInitializeApp,
   getApps: mockGetApps,
   getApp: mockGetApp,
+  FirebaseError: MockFirebaseError,
 }));

@@ -20,6 +20,7 @@
     },
     "AuthContext": {
       "loading": "Подготовка рабочего места"
+    },
     "SchemaEditor": {},
     "SchemaViewer": {
       "errorTitle": "Ошибка схемы",

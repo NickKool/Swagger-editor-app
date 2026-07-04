@@ -20,6 +20,7 @@
     },
     "AuthContext": {
       "loading": "Preparing workspace"
+    },
     "SchemaEditor": {},
     "SchemaViewer": {
       "errorTitle": "Schema Error",

@@ -1,10 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import SignUpPage from './page';
-
-vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => `pages.Auth.${key}`,
-}));
+import { mockTranslate } from '@/__mocks__/next-intl';
 
 vi.mock('@/lib/validate', () => ({
   validateEmail: vi.fn(),
@@ -15,7 +12,7 @@ import { validateEmail, validatePassword } from '@/lib/validate';
 
 describe('SignUpPage Component Workflow', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    mockTranslate.mockImplementation((key: string) => `pages.Auth.${key}`);
   });
 
   it('should successfully render the sign-up form with all initial inputs', () => {
@@ -65,4 +62,17 @@ describe('SignUpPage Component Workflow', () => {
 
     expect(screen.queryByText('pages.Auth.errors.invalidEmail')).not.toBeInTheDocument();
   });
+});
+it('should process form submission successfully when all inputs are valid', async () => {
+  vi.mocked(validateEmail).mockReturnValue(true);
+  vi.mocked(validatePassword).mockReturnValue(true);
+  render(<SignUpPage />);
+  const emailInput = screen.getByPlaceholderText('pages.Auth.placeholders.email');
+  const passwordInput = screen.getByPlaceholderText('pages.Auth.placeholders.password');
+  const submitButton = screen.getByRole('button', { name: 'pages.Auth.buttons.register' });
+  fireEvent.change(emailInput, { target: { value: 'correct@example.com' } });
+  fireEvent.change(passwordInput, { target: { value: 'ValidPassword123!' } });
+  fireEvent.click(submitButton);
+  expect(submitButton).not.toBeDisabled();
+  expect(screen.getByRole('button', { name: 'pages.Auth.buttons.register' })).toBeInTheDocument();
 });

@@ -12,7 +12,9 @@
     "Header": {
       "signIn": "Войти",
       "signUp": "Зарегестрироваться",
-      "about": "О нас"
+      "about": "О нас",
+      "history": "История",
+      "signOut": "Выйти"
     },
     "Footer": {
       "about": "О нас",

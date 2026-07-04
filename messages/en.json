@@ -12,7 +12,9 @@
     "Header": {
       "signIn": "Sign In",
       "signUp": "Sign Up",
-      "about": "About Us"
+      "about": "About Us",
+      "history": "History",
+      "signOut": "Sign Out"
     },
     "Footer": {
       "about": "About Us",

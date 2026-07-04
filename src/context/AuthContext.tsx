@@ -5,6 +5,7 @@ import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User, signOut } from 'firebase/auth';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { Loader } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface AuthContextType {
   user: User | null;
@@ -15,6 +16,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
+  const t = useTranslations('components.AuthContext');
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -57,7 +60,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-2">
           <Loader className="h-8 w-8 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground font-medium tracking-tight animate-pulse">
-            Preparing workspace...
+            {t('loading')}...
           </p>
         </div>
       ) : (

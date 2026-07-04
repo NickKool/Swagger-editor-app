@@ -70,7 +70,8 @@ describe('Footer Component', () => {
     const logos = screen.getAllByRole('img', { name: 'GitHub' });
     expect(logos).toHaveLength(MOCK_AUTHORS.length * 2);
 
-    expect(logos[0]).toHaveClass('dark:hidden');
-    expect(logos[1]).toHaveClass('hidden dark:block');
+    expect(logos[0]).toHaveClass('hidden md:dark:hidden md:block');
+
+    expect(logos[1]).toHaveClass('hidden md:dark:block');
   });
 });

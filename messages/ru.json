@@ -18,6 +18,9 @@
       "about": "О нас",
       "developed": "Разработан:"
     },
+    "AuthContext": {
+      "loading": "Подготовка рабочего места"
+    },
     "SchemaEditor": {},
     "SchemaViewer": {
       "errorTitle": "Ошибка схемы",
@@ -67,6 +70,30 @@
         "nikolayContribution": "Проектирование базы данных"
       },
       "gitHubProfile": "Профиль GitHub"
+    },
+    "Auth": {
+      "register": {
+        "title": "Создать аккаунт",
+        "description": "Введите вашу почту и придумайте пароль",
+        "alreadyHaveAccount": "Уже есть аккаунт?",
+        "signInLink": "Войти"
+      },
+      "labels": {
+        "email": "Электронная почта",
+        "password": "Пароль"
+      },
+      "placeholders": {
+        "email": "name@example.com",
+        "password": "••••••••"
+      },
+      "buttons": {
+        "register": "Зарегистрироваться",
+        "processing": "Создание аккаунта..."
+      },
+      "errors": {
+        "invalidEmail": "Пожалуйста, введите корректный адрес электронной почты (например, name@example.com).",
+        "invalidPassword": "Пароль должен быть не менее 8 символов, содержать минимум одну заглавную букву, одну строчную букву, одну цифру и один специальный символ."
+      }
     }
   }
 }

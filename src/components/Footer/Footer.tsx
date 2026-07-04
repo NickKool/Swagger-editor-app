@@ -13,12 +13,12 @@ export default function Footer() {
   const t = useTranslations('components.Footer');
 
   return (
-    <footer className="border-t w-full px-10 py-5 flex justify-between bg-background text-foreground">
+    <footer className="border-t w-full px-10 py-5 flex flex-col md:flex-row md:justify-between items-center gap-4 md:gap-0 bg-background text-foreground">
       <Link href="/about" className="hover:underline">
         {t('about')}
       </Link>
 
-      <div className="flex gap-4">
+      <div className="flex flex-wrap justify-center items-center gap-4">
         <span>{t('developed')}</span>
         {AUTHORS.map((author) => (
           <a
@@ -29,13 +29,19 @@ export default function Footer() {
             rel="noopener noreferrer"
           >
             <span>{author.name}</span>
-            <Image src={darkGhLogo} alt="GitHub" width={25} height={25} className="dark:hidden" />
+            <Image
+              src={darkGhLogo}
+              alt="GitHub"
+              width={25}
+              height={25}
+              className="hidden md:dark:hidden md:block"
+            />
             <Image
               src={lightGhLogo}
               alt="GitHub"
               width={25}
               height={25}
-              className="hidden dark:block"
+              className="hidden md:dark:block"
             />
           </a>
         ))}

@@ -3,6 +3,11 @@ import { render, screen, waitFor } from '@testing-library/react';
 import type { User } from 'firebase/auth';
 import { mockPush, usePathname } from '@/__mocks__/i18n-navigation';
 import { mockOnAuthStateChanged, mockSignOut } from '@/__mocks__/firebase-auth';
+import { mockUseTranslations, mockTranslate } from '@/__mocks__/next-intl';
+
+vi.mock('next-intl', () => ({
+  useTranslations: () => mockUseTranslations(),
+}));
 
 describe('AuthContext and AuthProvider Workflows', () => {
   beforeEach(() => {
@@ -10,6 +15,7 @@ describe('AuthContext and AuthProvider Workflows', () => {
     mockPush.mockClear();
     mockOnAuthStateChanged.mockReset();
     mockSignOut.mockClear();
+    mockTranslate.mockClear();
     vi.mocked(usePathname).mockReturnValue('/');
   });
 
@@ -24,7 +30,7 @@ describe('AuthContext and AuthProvider Workflows', () => {
       </AuthProvider>,
     );
 
-    expect(screen.getByText('Preparing workspace...')).toBeInTheDocument();
+    expect(screen.getByText('loading...')).toBeInTheDocument();
     expect(screen.queryByTestId('child-content')).not.toBeInTheDocument();
   });
 
@@ -45,7 +51,7 @@ describe('AuthContext and AuthProvider Workflows', () => {
     await waitFor(() => {
       expect(screen.getByTestId('child-content')).toBeInTheDocument();
     });
-    expect(screen.queryByText('Preparing workspace...')).not.toBeInTheDocument();
+    expect(screen.queryByText('loading...')).not.toBeInTheDocument();
   });
 
   it('should trigger redirect to root route if authenticated user visits auth pages', async () => {

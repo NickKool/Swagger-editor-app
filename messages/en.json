@@ -18,6 +18,9 @@
       "about": "About Us",
       "developed": "Developed by:"
     },
+    "AuthContext": {
+      "loading": "Preparing workspace"
+    },
     "SchemaEditor": {},
     "SchemaViewer": {
       "errorTitle": "Schema Error",
@@ -67,6 +70,30 @@
         "nikolayContribution": "Database Design"
       },
       "gitHubProfile": "GitHub Profile"
+    },
+    "Auth": {
+      "register": {
+        "title": "Create an Account",
+        "description": "Enter your email and create a password",
+        "alreadyHaveAccount": "Already have an account?",
+        "signInLink": "Sign In"
+      },
+      "labels": {
+        "email": "Email Address",
+        "password": "Password"
+      },
+      "placeholders": {
+        "email": "name@example.com",
+        "password": "••••••••"
+      },
+      "buttons": {
+        "register": "Sign Up",
+        "processing": "Creating account..."
+      },
+      "errors": {
+        "invalidEmail": "Please enter a valid email address (e.g., name@example.com).",
+        "invalidPassword": "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character."
+      }
     }
   }
 }

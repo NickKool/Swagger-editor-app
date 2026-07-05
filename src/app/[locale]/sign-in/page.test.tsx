@@ -2,13 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import SignInPage from './page';
 
-// 1. Импортируем моки из глобальной инфраструктуры проекта
 import { mockTranslate } from '@/__mocks__/next-intl';
 import { mockPush } from '@/__mocks__/i18n-navigation';
 import { useAuth } from '@/context/AuthContext';
 import { mockSignInWithEmailAndPassword } from '@/__mocks__/firebase-auth';
 
-// 2. Достаем наш замоканный класс ошибки и типы
 import { FirebaseError } from 'firebase/app';
 import type { UserCredential } from 'firebase/auth';
 
@@ -36,7 +34,6 @@ describe('SignInPage Component Workflow', () => {
     mockPush.mockClear();
     mockSignInWithEmailAndPassword.mockClear();
 
-    // По умолчанию настраиваем гостевой режим (загрузка завершена, юзера нет)
     vi.mocked(useAuth).mockReturnValue({
       user: null,
       loading: false,

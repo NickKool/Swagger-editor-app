@@ -7,6 +7,8 @@ import AuthProvider from '@/context/AuthContext';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 
+import { Toaster } from '@/components/ui/sonner';
+
 interface LocaleLayoutProps {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -26,6 +28,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <AuthProvider>
         <Header />
         <main className="flex flex-col flex-1">{children}</main>
+        <Toaster />
         <Footer />
       </AuthProvider>
     </NextIntlClientProvider>

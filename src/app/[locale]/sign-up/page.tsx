@@ -2,8 +2,13 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { validateEmail, validatePassword } from '@/lib/validate';
+
+import { auth } from '@/lib/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
+import { toast } from 'sonner';
 
 import {
   Card,
@@ -19,6 +24,7 @@ import { Label } from '@/components/ui/label';
 
 export default function SignUpPage() {
   const t = useTranslations('pages.Auth');
+  const router = useRouter();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -47,8 +53,36 @@ export default function SignUpPage() {
 
     try {
       setIsSubmitting(true);
+      await createUserWithEmailAndPassword(auth, email.trim(), password);
+      toast.success('Account Created!', {
+        description: 'Welcome to Swagger Editor.',
+        position: 'top-center',
+      });
+      router.push('/');
     } catch (error) {
-      console.error(error);
+      console.error('Firebase SignUp Error:', error);
+
+      if (error instanceof FirebaseError) {
+        if (error.code === 'auth/email-already-in-use') {
+          setEmailError('This email address is already registered.');
+        } else if (error.code === 'auth/invalid-email') {
+          setEmailError('The email address is badly formatted.');
+        } else if (error.code === 'auth/weak-password') {
+          setPasswordError('The password is too weak.');
+        } else {
+          toast.error('Registration Failed', {
+            description: error.message || 'An unexpected error occurred.',
+            position: 'top-center',
+          });
+        }
+      } else {
+        const errorMessage =
+          error instanceof Error ? error.message : 'An unexpected error occurred.';
+        toast.error('Registration Failed', {
+          description: errorMessage,
+          position: 'top-center',
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }

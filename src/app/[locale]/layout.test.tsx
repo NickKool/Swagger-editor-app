@@ -5,12 +5,16 @@ import LocaleLayout from './layout';
 import { mockGetMessages } from '@/__mocks__/next-intl-server';
 import { mockNotFound } from '@/__mocks__/next-navigation';
 
-vi.mock('@/components/LanguageSelector/LanguageSelector', () => ({
-  default: () => <div data-testid="mock-language-selector">LanguageSelector</div>,
+vi.mock('@/components/Header/Header', () => ({
+  default: () => <div data-testid="mock-header">Header</div>,
 }));
 
-vi.mock('@/components/theme/ThemeSelector/ThemeSelector', () => ({
-  default: () => <div data-testid="mock-theme-selector">ThemeSelector</div>,
+vi.mock('@/components/Footer/Footer', () => ({
+  default: () => <div data-testid="mock-footer">Footer</div>,
+}));
+
+vi.mock('@/components/ui/sonner', () => ({
+  Toaster: () => <div data-testid="mock-toaster">Toaster</div>,
 }));
 
 vi.mock('@/context/AuthContext', () => ({
@@ -34,10 +38,13 @@ describe('LocaleLayout Component', () => {
     const authProvider = screen.getByTestId('mock-auth-provider');
     expect(authProvider).toBeInTheDocument();
 
-    const langSelector = screen.getByTestId('mock-language-selector');
-    const themeSelector = screen.getByTestId('mock-theme-selector');
-    expect(authProvider).toContainElement(langSelector);
-    expect(authProvider).toContainElement(themeSelector);
+    const header = screen.getByTestId('mock-header');
+    const footer = screen.getByTestId('mock-footer');
+    const toaster = screen.getByTestId('mock-toaster');
+
+    expect(authProvider).toContainElement(header);
+    expect(authProvider).toContainElement(footer);
+    expect(authProvider).toContainElement(toaster);
 
     const mainContent = screen.getByTestId('layout-children');
     expect(mainContent).toBeInTheDocument();

@@ -36,12 +36,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (loading) return;
 
-    if (user && (pathname === '/login' || pathname === '/register')) {
+    if (user && (pathname === '/sign-in' || pathname === '/sign-up')) {
       router.push('/');
     }
 
     if (!user && pathname === '/history') {
-      router.push('/login');
+      router.push('/');
     }
   }, [user, loading, pathname, router]);
 

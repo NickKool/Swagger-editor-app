@@ -57,7 +57,7 @@ describe('AuthContext and AuthProvider Workflows', () => {
   it('should trigger redirect to root route if authenticated user visits auth pages', async () => {
     const mockUser: Partial<User> = { email: 'test@example.com', uid: '12345' };
 
-    vi.mocked(usePathname).mockReturnValue('/register');
+    vi.mocked(usePathname).mockReturnValue('/sign-up');
 
     mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
       callback(mockUser as User);

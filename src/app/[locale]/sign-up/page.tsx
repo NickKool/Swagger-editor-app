@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { validateEmail, validatePassword } from '@/lib/validate';
 
+import { useAuth } from '@/context/AuthContext';
+
 import { auth } from '@/lib/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
@@ -26,12 +28,18 @@ export default function SignUpPage() {
   const t = useTranslations('pages.Auth');
   const router = useRouter();
 
+  const { user, loading } = useAuth();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (loading || user) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();

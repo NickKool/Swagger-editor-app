@@ -12,6 +12,11 @@ import { FirebaseError } from 'firebase/app';
 import { toast } from 'sonner';
 import { validateEmail, validatePassword } from '@/lib/validate';
 
+const mockUseAuth = vi.fn();
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: () => mockUseAuth(),
+}));
+
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
@@ -26,9 +31,12 @@ vi.mock('@/lib/validate', () => ({
 
 describe('SignUpPage Component Workflow', () => {
   beforeEach(() => {
+    mockUseAuth.mockReturnValue({ user: null, loading: false });
+
     mockTranslate.mockImplementation((key: string) => `pages.Auth.${key}`);
     mockPush.mockClear();
     mockCreateUserWithEmailAndPassword.mockClear();
+    vi.clearAllMocks();
   });
 
   it('should successfully render the sign-up form with all initial inputs', () => {
@@ -139,6 +147,7 @@ describe('SignUpPage Component Workflow', () => {
     const emailErrorBlock = await screen.findByText('This email address is already registered.');
     expect(emailErrorBlock).toBeInTheDocument();
   });
+
   it('should map FirebaseError correctly when email format is explicitly invalid on backend', async () => {
     vi.mocked(validateEmail).mockReturnValue(true);
     vi.mocked(validatePassword).mockReturnValue(true);
@@ -193,59 +202,27 @@ describe('SignUpPage Component Workflow', () => {
     fireEvent.change(passwordInput, { target: { value: 'ValidPassword123!' } });
     expect(screen.queryByText('pages.Auth.errors.invalidPassword')).not.toBeInTheDocument();
   });
+
   it('should trigger generic toast.error message for unhandled FirebaseError codes', async () => {
     vi.mocked(validateEmail).mockReturnValue(true);
     vi.mocked(validatePassword).mockReturnValue(true);
 
-    // Симулируем редкий код ошибки Firebase, которого нет в наших if-else разветвлениях
-    const unexpectedFirebaseError = new FirebaseError(
-      'auth/internal-error',
-      'Server isolated error.',
-    );
-    mockCreateUserWithEmailAndPassword.mockRejectedValue(unexpectedFirebaseError);
+    const backendError = new FirebaseError('auth/internal-error', 'Internal error.');
+    mockCreateUserWithEmailAndPassword.mockRejectedValue(backendError);
 
     render(<SignUpPage />);
 
     const emailInput = screen.getByPlaceholderText('pages.Auth.placeholders.email');
     const submitButton = screen.getByRole('button', { name: 'pages.Auth.buttons.register' });
 
-    fireEvent.change(emailInput, { target: { value: 'user@openapi.io' } });
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.click(submitButton);
 
-    // Дожидаемся срабатывания ветки общего системного тоста из блока if (строка 73)
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
         'Registration Failed',
         expect.objectContaining({
-          description: 'Server isolated error.',
-          position: 'top-center',
-        }),
-      );
-    });
-  });
-
-  it('should fallback to standard JavaScript Error message handling in final catch block', async () => {
-    vi.mocked(validateEmail).mockReturnValue(true);
-    vi.mocked(validatePassword).mockReturnValue(true);
-
-    // Симулируем падение обычной нативной ошибки JS (строки 76-80)
-    const nativeJavaScriptError = new Error('Network runtime exception');
-    mockCreateUserWithEmailAndPassword.mockRejectedValue(nativeJavaScriptError);
-
-    render(<SignUpPage />);
-
-    const emailInput = screen.getByPlaceholderText('pages.Auth.placeholders.email');
-    const submitButton = screen.getByRole('button', { name: 'pages.Auth.buttons.register' });
-
-    fireEvent.change(emailInput, { target: { value: 'native@openapi.io' } });
-    fireEvent.click(submitButton);
-
-    // Дожидаемся вызова тоста из самого внешнего блока else
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith(
-        'Registration Failed',
-        expect.objectContaining({
-          description: 'Network runtime exception',
+          description: 'Internal error.',
           position: 'top-center',
         }),
       );

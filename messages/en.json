@@ -80,6 +80,12 @@
         "alreadyHaveAccount": "Already have an account?",
         "signInLink": "Sign In"
       },
+      "login": {
+        "title": "Welcome Back",
+        "description": "Enter your email and password",
+        "dontHaveAccount": "Don't have an account?",
+        "signUpLink": "Sign Up"
+      },
       "labels": {
         "email": "Email Address",
         "password": "Password"
@@ -90,11 +96,14 @@
       },
       "buttons": {
         "register": "Sign Up",
-        "processing": "Creating account..."
+        "signIn": "Sign In",
+        "processing": "Please wait..."
       },
       "errors": {
         "invalidEmail": "Please enter a valid email address (e.g., name@example.com).",
-        "invalidPassword": "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character."
+        "invalidPassword": "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.",
+        "requiredPassword": "Password is required.",
+        "invalidCredentials": "Invalid email or password. Please try again."
       }
     }
   }

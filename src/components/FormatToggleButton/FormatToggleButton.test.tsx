@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import FormatToggleButton from './FormatToggleButton';
 import { useOpenApiSchemaStore } from '@/stores/OpenApiSchema';
 import { mockTranslate } from '@/__mocks__/next-intl';
@@ -58,10 +58,6 @@ describe('FormatToggleButton', () => {
     setSpec: vi.fn(),
     validateAndParseSpec: vi.fn(),
   };
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   it('should render currently active uppercase format text indicator and button with translation title attribute', () => {
     vi.mocked(useOpenApiSchemaStore).mockImplementation((selector) => selector(MOCK_STORE_STATE));

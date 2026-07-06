@@ -114,7 +114,6 @@ describe('SaveSchemaButton Component', () => {
   afterEach(() => {
     vi.runOnlyPendingTimers();
     vi.useRealTimers();
-    vi.clearAllMocks();
   });
 
   const setMockStore = (overrides: Partial<OpenApiSchemaStoreState>) => {

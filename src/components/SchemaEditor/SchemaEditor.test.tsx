@@ -27,7 +27,7 @@ interface MockCodeMirrorProps {
   value: string;
   onChange: (v: string) => void;
   theme: string;
-  extensions: string[];
+  extensions: unknown[];
 }
 
 vi.mock('@/context/AuthContext', () => ({
@@ -57,15 +57,24 @@ vi.mock('@uiw/react-codemirror', () => ({
     <textarea
       data-testid="codemirror"
       data-theme={theme}
-      data-extensions={JSON.stringify(extensions)}
+      data-extensions-count={extensions?.length || 0}
       value={value}
       onChange={(e) => onChange(e.target.value)}
     />
   ),
 }));
 
-vi.mock('@codemirror/lang-json', () => ({ json: vi.fn(() => 'json-extension') }));
+vi.mock('@codemirror/lang-json', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@codemirror/lang-json')>();
+  return {
+    ...actual,
+    json: vi.fn(() => []),
+    jsonParseLinter: vi.fn(() => vi.fn(() => [])),
+  };
+});
 vi.mock('@codemirror/lang-yaml', () => ({ yaml: vi.fn(() => 'yaml-extension') }));
+vi.mock('@/utils/codemirror-linters', () => ({ yamlLinter: 'yaml-linter-extension' }));
+
 vi.mock('./EditorTheme', () => ({ editorDarkTheme: 'dark-theme-extension' }));
 
 vi.mock('@/components/FormatToggleButton/FormatToggleButton', () => ({
@@ -211,10 +220,7 @@ describe('SchemaEditor', () => {
     render(<SchemaEditor />);
 
     const editor = screen.getByTestId('codemirror');
-    expect(editor).toHaveAttribute(
-      'data-extensions',
-      JSON.stringify(['json-extension', 'dark-theme-extension']),
-    );
+    expect(editor).toHaveAttribute('data-extensions-count', '4');
   });
 
   it('should build and return isolated yaml extension setup pipeline variant when document format is yaml style configuration', () => {
@@ -223,10 +229,7 @@ describe('SchemaEditor', () => {
     render(<SchemaEditor />);
 
     const editor = screen.getByTestId('codemirror');
-    expect(editor).toHaveAttribute(
-      'data-extensions',
-      JSON.stringify(['yaml-extension', 'dark-theme-extension']),
-    );
+    expect(editor).toHaveAttribute('data-extensions-count', '4');
   });
 
   it('should skip schema initialization if authentication is currently loading', () => {

@@ -3,8 +3,9 @@
 import { useEffect, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import CodeMirror from '@uiw/react-codemirror';
-import { json } from '@codemirror/lang-json';
+import { json, jsonParseLinter } from '@codemirror/lang-json';
 import { yaml } from '@codemirror/lang-yaml';
+import { linter, lintGutter } from '@codemirror/lint';
 import { Loader } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -13,6 +14,7 @@ import SaveSchemaButton from '@/components/SaveSchemaButton/SaveSchemaButton';
 import { useOpenApiSchemaStore } from '@/stores/OpenApiSchema';
 import { useAuth } from '@/context/AuthContext';
 import { editorDarkTheme } from './EditorTheme';
+import { yamlLinter } from '@/utils/codemirror-linters';
 
 export default function SchemaEditor() {
   const t = useTranslations('components.SchemaEditor');
@@ -29,8 +31,8 @@ export default function SchemaEditor() {
 
   const extensions = useMemo(() => {
     const extensionsMap = {
-      json: [json(), editorDarkTheme],
-      yaml: [yaml(), editorDarkTheme],
+      json: [json(), linter(jsonParseLinter()), lintGutter(), editorDarkTheme],
+      yaml: [yaml(), yamlLinter, lintGutter(), editorDarkTheme],
     };
 
     return extensionsMap[format];

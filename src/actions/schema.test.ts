@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { fetchSchema, saveSchema } from './schema';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -23,10 +23,6 @@ describe('Schema Server Actions', () => {
 
   beforeEach(() => {
     vi.mocked(doc).mockReturnValue(mockDocRef as unknown as ReturnType<typeof doc>);
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
   });
 
   describe('fetchSchema', () => {

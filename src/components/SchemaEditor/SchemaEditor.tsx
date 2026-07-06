@@ -28,7 +28,12 @@ export default function SchemaEditor() {
   const initializeSchema = useOpenApiSchemaStore((state) => state.initializeSchema);
 
   const extensions = useMemo(() => {
-    return format === 'json' ? [json(), editorDarkTheme] : [yaml(), editorDarkTheme];
+    const extensionsMap = {
+      json: [json(), editorDarkTheme],
+      yaml: [yaml(), editorDarkTheme],
+    };
+
+    return extensionsMap[format];
   }, [format]);
 
   useEffect(() => {

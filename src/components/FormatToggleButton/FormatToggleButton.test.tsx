@@ -1,7 +1,14 @@
 import { render, screen } from '@testing-library/react';
-import { fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import ToggleIndicator from './FormatToggleButton';
+import { userEvent } from '@testing-library/user-event';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import FormatToggleButton from './FormatToggleButton';
+import { useOpenApiSchemaStore } from '@/stores/OpenApiSchema';
+import { mockTranslate } from '@/__mocks__/next-intl';
+import { OpenApiSchemaStoreState } from '@/stores/OpenApiSchema.types';
+
+vi.mock('@/stores/OpenApiSchema', () => ({
+  useOpenApiSchemaStore: vi.fn(),
+}));
 
 vi.mock('@/components/ui/button', () => ({
   Button: ({
@@ -9,106 +16,95 @@ vi.mock('@/components/ui/button', () => ({
     disabled,
     onClick,
     className,
+    title,
   }: {
     children: React.ReactNode;
     disabled?: boolean;
     onClick?: () => void;
     className?: string;
+    title?: string;
   }) => (
-    <button data-testid="ui-button" disabled={disabled} onClick={onClick} className={className}>
+    <button
+      data-testid="ui-button"
+      disabled={disabled}
+      onClick={onClick}
+      className={className}
+      title={title}
+    >
       {children}
     </button>
   ),
 }));
 
-vi.mock('@/lib/utils', () => ({
-  cn: (...inputs: unknown[]) =>
-    inputs
-      .flatMap((input) => {
-        if (!input) return [];
-        if (typeof input === 'object') {
-          return Object.entries(input)
-            .filter(([, v]) => v)
-            .map(([k]) => k);
-        }
-        return String(input).split(' ');
-      })
-      .filter(Boolean)
-      .join(' '),
-}));
+const MOCK_MESSAGES: Record<string, string> = {
+  title: 'Toggle format',
+} as const;
 
-describe('ToggleIndicator', () => {
-  it('should render both indicator and button layout content values safely', () => {
-    render(
-      <ToggleIndicator
-        indicatorContent={<span data-testid="indicator">YAML</span>}
-        buttonContent={<span>Icon</span>}
-        onClick={vi.fn()}
-      />,
-    );
+mockTranslate.mockImplementation((k: string) => MOCK_MESSAGES[k]);
 
-    expect(screen.getByTestId('indicator')).toBeInTheDocument();
-    expect(screen.getByText('Icon')).toBeInTheDocument();
+describe('FormatToggleButton', () => {
+  const toggleFormatMock = vi.fn();
+
+  const MOCK_STORE_STATE: OpenApiSchemaStoreState = {
+    format: 'yaml',
+    isValid: true,
+    toggleFormat: toggleFormatMock,
+    spec: '',
+    error: null,
+    parsedSpec: null,
+    hasInitialized: false,
+    isLoading: false,
+    initializeSchema: vi.fn(),
+    setSpec: vi.fn(),
+    validateAndParseSpec: vi.fn(),
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it('should trigger target callback mechanism when actionable element receives click actions', () => {
-    const onClickMock = vi.fn();
-    render(
-      <ToggleIndicator
-        indicatorContent={<span>YAML</span>}
-        buttonContent={<span>Icon</span>}
-        onClick={onClickMock}
-      />,
-    );
+  it('should render currently active uppercase format text indicator and button with translation title attribute', () => {
+    vi.mocked(useOpenApiSchemaStore).mockImplementation((selector) => selector(MOCK_STORE_STATE));
 
-    fireEvent.click(screen.getByTestId('ui-button'));
-    expect(onClickMock).toHaveBeenCalled();
+    render(<FormatToggleButton />);
+
+    expect(screen.getByText('YAML')).toBeInTheDocument();
+
+    const button = screen.getByTestId('ui-button');
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveAttribute('title', MOCK_MESSAGES['title']);
+    expect(button).not.toBeDisabled();
   });
 
-  it('should forward disabled visibility flags down to internal subcomponents', () => {
-    render(
-      <ToggleIndicator
-        indicatorContent={<span>YAML</span>}
-        buttonContent={<span>Icon</span>}
-        onClick={vi.fn()}
-        disabled={true}
-      />,
+  it('should trigger target store update mechanism when active component receives layout click action', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(useOpenApiSchemaStore).mockImplementation((selector) =>
+      selector({ ...MOCK_STORE_STATE, format: 'json' }),
     );
 
-    expect(screen.getByTestId('ui-button')).toBeDisabled();
+    render(<FormatToggleButton />);
+
+    expect(screen.getByText('JSON')).toBeInTheDocument();
+
+    await user.click(screen.getByTestId('ui-button'));
+    expect(toggleFormatMock).toHaveBeenCalledTimes(1);
   });
 
-  it('should assign right corner rounding variations during standard configuration alignments', () => {
-    render(
-      <ToggleIndicator
-        indicatorContent={<span data-testid="indicator">YAML</span>}
-        buttonContent={<span>Icon</span>}
-        onClick={vi.fn()}
-        buttonSide="right"
-      />,
+  it('should explicitly lock actionable element interaction pipelines down when current state validation check fails', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(useOpenApiSchemaStore).mockImplementation((selector) =>
+      selector({ ...MOCK_STORE_STATE, isValid: false }),
     );
 
-    const indicatorWrapper = screen.getByTestId('indicator').parentElement;
-    const buttonElement = screen.getByTestId('ui-button');
+    render(<FormatToggleButton />);
 
-    expect(indicatorWrapper?.className).toContain('rounded-l-4xl');
-    expect(buttonElement.className).toContain('rounded-l-none');
-  });
+    const button = screen.getByTestId('ui-button');
+    expect(button).toBeDisabled();
 
-  it('should assign left corner rounding variations during alternative configuration alignments', () => {
-    render(
-      <ToggleIndicator
-        indicatorContent={<span data-testid="indicator">YAML</span>}
-        buttonContent={<span>Icon</span>}
-        onClick={vi.fn()}
-        buttonSide="left"
-      />,
-    );
+    await user.click(button);
 
-    const indicatorWrapper = screen.getByTestId('indicator').parentElement;
-    const buttonElement = screen.getByTestId('ui-button');
-
-    expect(indicatorWrapper?.className).toContain('rounded-r-4xl');
-    expect(buttonElement.className).toContain('rounded-r-none');
+    expect(toggleFormatMock).not.toHaveBeenCalled();
   });
 });

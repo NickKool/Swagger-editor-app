@@ -13,13 +13,6 @@ export default function FormatToggleButton() {
   const isValid = useOpenApiSchemaStore((state) => state.isValid);
   const toggleFormat = useOpenApiSchemaStore((state) => state.toggleFormat);
 
-  const handleToggle = () => {
-    if (!isValid) {
-      return;
-    }
-    toggleFormat();
-  };
-
   return (
     <div className="w-min flex items-center">
       <div className="flex h-full flex-1 items-center justify-center pl-3 pr-2 border text-sm font-medium card-ba rounded-l-4xl transition-opacity duration-200">
@@ -32,7 +25,7 @@ export default function FormatToggleButton() {
         variant="outline"
         className="rounded-l-none transition-opacity duration-200"
         disabled={!isValid}
-        onClick={handleToggle}
+        onClick={() => toggleFormat()}
         title={t('title')}
       >
         <ArrowDownUp className="h-4 w-4" />

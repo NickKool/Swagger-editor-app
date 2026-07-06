@@ -30,6 +30,20 @@
       "schemaVersion": "Версия: {version}",
       "schemaPathsDetected": "Путей обнаружено: {paths}",
       "schemaWaiting": "Ожидание действительной схемы конфигурации OpenAPI..."
+    },
+    "SaveSchemaButton": {
+      "title": "Сохранить схему",
+      "toasts": {
+        "loading": "Сохранение изменений схемы...",
+        "success": {
+          "title": "Изменения сохранены!",
+          "description": "Конфигурация вашей API схемы была обновлена."
+        },
+        "error": {
+          "title": "Ошибка сохранения",
+          "description": "Произошла непредвиденная ошибка сервера."
+        }
+      }
     }
   },
   "stores": {

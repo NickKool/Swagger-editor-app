@@ -30,6 +30,20 @@
       "schemaVersion": "Version: {version}",
       "schemaPathsDetected": "Paths detected: {paths}",
       "schemaWaiting": "Waiting for a valid OpenAPI configuration schema..."
+    },
+    "SaveSchemaButton": {
+      "title": "Save Schema",
+      "toasts": {
+        "loading": "Saving schema changes...",
+        "success": {
+          "title": "Changes saved!",
+          "description": "Your API schema configuration has been updated."
+        },
+        "error": {
+          "title": "Save failed",
+          "description": "An unexpected server error occurred."
+        }
+      }
     }
   },
   "stores": {

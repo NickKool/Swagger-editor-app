@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import ToggleIndicator from './ToggleIndicator';
+import ToggleIndicator from './FormatToggleButton';
 
 vi.mock('@/components/ui/button', () => ({
   Button: ({

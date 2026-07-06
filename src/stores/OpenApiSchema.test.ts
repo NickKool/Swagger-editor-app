@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { validate, dereference } from '@scalar/openapi-parser';
-import { useOpenApiSchemaStore } from './OpenApiSchema.store';
+import { useOpenApiSchemaStore } from './OpenApiSchema';
 import { OpenApiSchemaStoreState } from './OpenApiSchema.types';
 import { OpenAPI } from '@scalar/openapi-types';
 import YAML from 'yaml';

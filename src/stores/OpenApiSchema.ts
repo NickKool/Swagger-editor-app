@@ -3,6 +3,7 @@ import YAML from 'yaml';
 import { validate, dereference } from '@scalar/openapi-parser';
 import { DEFAULT_YAML_SCHEMA } from '@/constants/open-api';
 import { OpenApiSchemaStoreState, SpecFormat } from './OpenApiSchema.types';
+import { fetchSchema } from '@/actions/schema';
 
 let validationTimeoutId: NodeJS.Timeout | null = null;
 
@@ -22,11 +23,49 @@ const detectFormat = (text: string): SpecFormat => {
 };
 
 export const useOpenApiSchemaStore = create<OpenApiSchemaStoreState>((set, get) => ({
-  spec: DEFAULT_YAML_SCHEMA,
+  spec: '',
   format: 'yaml',
   isValid: true,
   error: null,
   parsedSpec: null,
+  hasInitialized: false,
+  isLoading: false,
+
+  initializeSchema: async (authLoading: boolean, uid?: string) => {
+    if (authLoading || get().hasInitialized || get().isLoading) return;
+
+    if (!uid) {
+      await get().setSpec(DEFAULT_YAML_SCHEMA);
+      set({ hasInitialized: true });
+      return;
+    }
+
+    set({ isLoading: true, error: null });
+
+    try {
+      const schemaDocument = await fetchSchema(uid);
+      if (schemaDocument?.rawText) {
+        await get().setSpec(schemaDocument.rawText);
+      } else {
+        await get().setSpec(DEFAULT_YAML_SCHEMA);
+      }
+      set({ hasInitialized: true });
+    } catch (err: unknown) {
+      console.error(err);
+      await get().setSpec(DEFAULT_YAML_SCHEMA);
+      set({
+        isValid: false,
+        hasInitialized: true,
+        error: {
+          key: 'errors.fetchFailed',
+          fallback: err instanceof Error ? err.message : 'Failed to fetch schema',
+        },
+      });
+      throw err;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
   setSpec: async (newSpec: string) => {
     const detectedFormat = detectFormat(newSpec);
@@ -49,9 +88,7 @@ export const useOpenApiSchemaStore = create<OpenApiSchemaStoreState>((set, get) 
     const { spec, format, isValid } = get();
     const targetFormat: SpecFormat = format === 'json' ? 'yaml' : 'json';
 
-    if (!isValid) {
-      return;
-    }
+    if (!isValid) return;
 
     try {
       const parsedObject = format === 'json' ? JSON.parse(spec) : YAML.parse(spec);
@@ -117,5 +154,3 @@ export const useOpenApiSchemaStore = create<OpenApiSchemaStoreState>((set, get) 
     }
   },
 }));
-
-useOpenApiSchemaStore.getState().validateAndParseSpec();

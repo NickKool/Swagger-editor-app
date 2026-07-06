@@ -23,7 +23,9 @@
     "AuthContext": {
       "loading": "Подготовка рабочего места"
     },
-    "SchemaEditor": {},
+    "SchemaEditor": {
+      "loadingSchema": "Загрузка сохраненной схемы..."
+    },
     "SchemaViewer": {
       "errorTitle": "Ошибка схемы",
       "schemaReserveTitle": "Пример API",
@@ -44,11 +46,15 @@
           "description": "Произошла непредвиденная ошибка сервера."
         }
       }
+    },
+    "FormatToggleButton": {
+      "title": "Переключить формат"
     }
   },
   "stores": {
     "OpenAPISchema": {
       "errors": {
+        "fetchFailed": "Не удалось получить схему.",
         "empty": "Спецификация не может быть пустой.",
         "conversionFailed": "Не удалось разобрать синтаксис для конвертации.",
         "invalidStructure": "Ошибка валидации структуры схемы.",

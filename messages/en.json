@@ -23,7 +23,9 @@
     "AuthContext": {
       "loading": "Preparing workspace"
     },
-    "SchemaEditor": {},
+    "SchemaEditor": {
+      "loadingSchema": "Loading saved schema..."
+    },
     "SchemaViewer": {
       "errorTitle": "Schema Error",
       "schemaReserveTitle": "API Reference",
@@ -44,11 +46,15 @@
           "description": "An unexpected server error occurred."
         }
       }
+    },
+    "FormatToggleButton": {
+      "title": "Toggle Format"
     }
   },
   "stores": {
     "OpenAPISchema": {
       "errors": {
+        "fetchFailed": "Fetch schema failed.",
         "empty": "Specification cannot be empty.",
         "conversionFailed": "Failed to parse syntax for conversion.",
         "invalidStructure": "Schema structure validation failed.",

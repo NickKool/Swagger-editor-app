@@ -1,9 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import SignInPage from './page';
 
-// 1. Импортируем моки из глобальной инфраструктуры проекта
 import { mockTranslate } from '@/__mocks__/next-intl';
 import { mockPush } from '@/__mocks__/i18n-navigation';
 import { mockSignInWithEmailAndPassword } from '@/__mocks__/firebase-auth';
@@ -104,7 +102,6 @@ describe('SignInPage Component Workflow', () => {
       expect(submitButton).not.toBeDisabled();
     });
 
-    // Сверяем точную структуру: заголовок — login.title, описание — login.toastSuccess [ТЗ]
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalledWith(
         'pages.Auth.login.title',
@@ -154,7 +151,6 @@ describe('SignInPage Component Workflow', () => {
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.click(submitButton);
 
-    // Сверяем точные ключи локализации из дампа! [2.1]
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
         'pages.Auth.errors.accountLockedTitle',
@@ -182,7 +178,6 @@ describe('SignInPage Component Workflow', () => {
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.click(submitButton);
 
-    // Сверяем точные мультиязычные префиксы для неожиданных кодов Firebase [2.1]
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
         'pages.Auth.errors.authFailedTitle',
@@ -210,7 +205,6 @@ describe('SignInPage Component Workflow', () => {
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.click(submitButton);
 
-    // Сверяем точные ключи для нативных ошибок JS из внешнего catch [2.1]
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
         'pages.Auth.errors.loginFailedTitle',

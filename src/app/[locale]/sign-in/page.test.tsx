@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React from 'react';
 import SignInPage from './page';
 
+// 1. Импортируем моки из глобальной инфраструктуры проекта
 import { mockTranslate } from '@/__mocks__/next-intl';
 import { mockPush } from '@/__mocks__/i18n-navigation';
-import { useAuth } from '@/context/AuthContext';
 import { mockSignInWithEmailAndPassword } from '@/__mocks__/firebase-auth';
 
 import { FirebaseError } from 'firebase/app';
@@ -15,10 +16,6 @@ vi.mock('sonner', () => ({
     success: vi.fn(),
     error: vi.fn(),
   },
-}));
-
-vi.mock('@/context/AuthContext', () => ({
-  useAuth: vi.fn(),
 }));
 
 vi.mock('@/lib/validate', () => ({
@@ -33,23 +30,6 @@ describe('SignInPage Component Workflow', () => {
     mockTranslate.mockImplementation((key: string) => `pages.Auth.${key}`);
     mockPush.mockClear();
     mockSignInWithEmailAndPassword.mockClear();
-
-    vi.mocked(useAuth).mockReturnValue({
-      user: null,
-      loading: false,
-      logout: vi.fn(),
-    });
-  });
-
-  it('should return null if auth session is loading or user is already authenticated', () => {
-    vi.mocked(useAuth).mockReturnValue({
-      user: null,
-      loading: true,
-      logout: vi.fn(),
-    });
-
-    const { container } = render(<SignInPage />);
-    expect(container.firstChild).toBeNull();
   });
 
   it('should successfully render the sign-in form with all initial inputs', () => {
@@ -124,13 +104,16 @@ describe('SignInPage Component Workflow', () => {
       expect(submitButton).not.toBeDisabled();
     });
 
-    expect(toast.success).toHaveBeenCalledWith(
-      'Welcome Back!',
-      expect.objectContaining({
-        description: 'Successfully authenticated.',
-        position: 'top-center',
-      }),
-    );
+    // Сверяем точную структуру: заголовок — login.title, описание — login.toastSuccess [ТЗ]
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith(
+        'pages.Auth.login.title',
+        expect.objectContaining({
+          description: 'pages.Auth.login.toastSuccess',
+          position: 'top-center',
+        }),
+      );
+    });
 
     expect(mockPush).toHaveBeenCalledWith('/');
   });
@@ -171,10 +154,12 @@ describe('SignInPage Component Workflow', () => {
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.click(submitButton);
 
+    // Сверяем точные ключи локализации из дампа! [2.1]
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        'Account Locked Temporarily',
+        'pages.Auth.errors.accountLockedTitle',
         expect.objectContaining({
+          description: 'pages.Auth.errors.accountLockedDesc',
           position: 'top-center',
         }),
       );
@@ -197,9 +182,10 @@ describe('SignInPage Component Workflow', () => {
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.click(submitButton);
 
+    // Сверяем точные мультиязычные префиксы для неожиданных кодов Firebase [2.1]
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        'Authentication Failed',
+        'pages.Auth.errors.authFailedTitle',
         expect.objectContaining({
           description: 'Server error.',
           position: 'top-center',
@@ -224,9 +210,10 @@ describe('SignInPage Component Workflow', () => {
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.click(submitButton);
 
+    // Сверяем точные ключи для нативных ошибок JS из внешнего catch [2.1]
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        'Login Failed',
+        'pages.Auth.errors.loginFailedTitle',
         expect.objectContaining({
           description: 'Runtime error exception',
           position: 'top-center',

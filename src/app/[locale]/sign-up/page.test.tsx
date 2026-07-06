@@ -12,11 +12,6 @@ import { FirebaseError } from 'firebase/app';
 import { toast } from 'sonner';
 import { validateEmail, validatePassword } from '@/lib/validate';
 
-const mockUseAuth = vi.fn();
-vi.mock('@/context/AuthContext', () => ({
-  useAuth: () => mockUseAuth(),
-}));
-
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
@@ -31,12 +26,9 @@ vi.mock('@/lib/validate', () => ({
 
 describe('SignUpPage Component Workflow', () => {
   beforeEach(() => {
-    mockUseAuth.mockReturnValue({ user: null, loading: false });
-
     mockTranslate.mockImplementation((key: string) => `pages.Auth.${key}`);
     mockPush.mockClear();
     mockCreateUserWithEmailAndPassword.mockClear();
-    vi.clearAllMocks();
   });
 
   it('should successfully render the sign-up form with all initial inputs', () => {
@@ -115,9 +107,9 @@ describe('SignUpPage Component Workflow', () => {
 
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalledWith(
-        'Account Created!',
+        'pages.Auth.register.toastSuccess',
         expect.objectContaining({
-          description: 'Welcome to Swagger Editor.',
+          description: 'pages.Auth.register.toastDescription',
           position: 'top-center',
         }),
       );
@@ -144,7 +136,7 @@ describe('SignUpPage Component Workflow', () => {
     fireEvent.change(emailInput, { target: { value: 'duplicate@openapi.io' } });
     fireEvent.click(submitButton);
 
-    const emailErrorBlock = await screen.findByText('This email address is already registered.');
+    const emailErrorBlock = await screen.findByText('pages.Auth.errors.emailInUse');
     expect(emailErrorBlock).toBeInTheDocument();
   });
 
@@ -163,7 +155,7 @@ describe('SignUpPage Component Workflow', () => {
     fireEvent.change(emailInput, { target: { value: 'bad-format@openapi.io' } });
     fireEvent.click(submitButton);
 
-    const emailErrorBlock = await screen.findByText('The email address is badly formatted.');
+    const emailErrorBlock = await screen.findByText('pages.Auth.errors.adlyFormattedEmail');
     expect(emailErrorBlock).toBeInTheDocument();
   });
 
@@ -182,7 +174,7 @@ describe('SignUpPage Component Workflow', () => {
     fireEvent.change(passwordInput, { target: { value: '12345' } });
     fireEvent.click(submitButton);
 
-    const passwordErrorBlock = await screen.findByText('The password is too weak.');
+    const passwordErrorBlock = await screen.findByText('pages.Auth.errors.weakPassword');
     expect(passwordErrorBlock).toBeInTheDocument();
   });
 
@@ -202,27 +194,55 @@ describe('SignUpPage Component Workflow', () => {
     fireEvent.change(passwordInput, { target: { value: 'ValidPassword123!' } });
     expect(screen.queryByText('pages.Auth.errors.invalidPassword')).not.toBeInTheDocument();
   });
-
   it('should trigger generic toast.error message for unhandled FirebaseError codes', async () => {
     vi.mocked(validateEmail).mockReturnValue(true);
     vi.mocked(validatePassword).mockReturnValue(true);
 
-    const backendError = new FirebaseError('auth/internal-error', 'Internal error.');
-    mockCreateUserWithEmailAndPassword.mockRejectedValue(backendError);
+    const unexpectedFirebaseError = new FirebaseError(
+      'auth/internal-error',
+      'Server isolated error.',
+    );
+    mockCreateUserWithEmailAndPassword.mockRejectedValue(unexpectedFirebaseError);
 
     render(<SignUpPage />);
 
     const emailInput = screen.getByPlaceholderText('pages.Auth.placeholders.email');
     const submitButton = screen.getByRole('button', { name: 'pages.Auth.buttons.register' });
 
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(emailInput, { target: { value: 'user@openapi.io' } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        'Registration Failed',
+        'pages.Auth.errors.toastError',
         expect.objectContaining({
-          description: 'Internal error.',
+          description: 'Server isolated error.',
+          position: 'top-center',
+        }),
+      );
+    });
+  });
+
+  it('should fallback to standard JavaScript Error message handling in final catch block', async () => {
+    vi.mocked(validateEmail).mockReturnValue(true);
+    vi.mocked(validatePassword).mockReturnValue(true);
+
+    const nativeJavaScriptError = new Error('Network runtime exception');
+    mockCreateUserWithEmailAndPassword.mockRejectedValue(nativeJavaScriptError);
+
+    render(<SignUpPage />);
+
+    const emailInput = screen.getByPlaceholderText('pages.Auth.placeholders.email');
+    const submitButton = screen.getByRole('button', { name: 'pages.Auth.buttons.register' });
+
+    fireEvent.change(emailInput, { target: { value: 'native@openapi.io' } });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        'pages.Auth.errors.toastError',
+        expect.objectContaining({
+          description: 'Network runtime exception',
           position: 'top-center',
         }),
       );

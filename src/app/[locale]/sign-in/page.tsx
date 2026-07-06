@@ -9,7 +9,6 @@ import { auth } from '@/lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
 
-import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 
 import {
@@ -28,18 +27,12 @@ export default function SignInPage() {
   const t = useTranslations('pages.Auth');
   const router = useRouter();
 
-  const { user, loading } = useAuth();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  if (loading || user) {
-    return null;
-  }
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -64,8 +57,8 @@ export default function SignInPage() {
 
       await signInWithEmailAndPassword(auth, email.trim(), password);
 
-      toast.success('Welcome Back!', {
-        description: 'Successfully authenticated.',
+      toast.success(t('login.title'), {
+        description: t('login.toastSuccess'),
         position: 'top-center',
       });
 
@@ -79,22 +72,22 @@ export default function SignInPage() {
           error.code === 'auth/wrong-password' ||
           error.code === 'auth/invalid-credential'
         ) {
-          setPasswordError(t('errors.invalidCredentials') || 'Invalid email or password.');
+          setPasswordError(t('errors.invalidCredentials'));
         } else if (error.code === 'auth/too-many-requests') {
-          toast.error('Account Locked Temporarily', {
-            description: 'Too many failed login attempts. Please try again later.',
+          toast.error(t('errors.accountLockedTitle'), {
+            description: t('errors.accountLockedDesc'),
             position: 'top-center',
           });
         } else {
-          toast.error('Authentication Failed', {
-            description: error.message || 'An unexpected error occurred.',
+          toast.error(t('errors.authFailedTitle'), {
+            description: error.message || t('errors.unexpectedError'),
             position: 'top-center',
           });
         }
       } else {
         const errorMessage =
           error instanceof Error ? error.message : 'An unexpected error occurred.';
-        toast.error('Login Failed', {
+        toast.error(t('errors.loginFailedTitle'), {
           description: errorMessage,
           position: 'top-center',
         });

@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User, signOut } from 'firebase/auth';
-import { useRouter, usePathname } from '@/i18n/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { Loader } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -22,32 +22,31 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState<boolean>(true);
 
   const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       setLoading(false);
+
+      if (currentUser) {
+        try {
+          const token = await currentUser.getIdToken();
+          document.cookie = `auth-token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax; Secure`;
+        } catch (error) {
+          console.error('Error fetching auth token:', error);
+        }
+      } else {
+        document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      }
     });
 
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (loading) return;
-
-    if (user && (pathname === '/sign-in' || pathname === '/sign-up')) {
-      router.push('/');
-    }
-
-    if (!user && pathname === '/history') {
-      router.push('/');
-    }
-  }, [user, loading, pathname, router]);
-
   const logout = async () => {
     try {
       await signOut(auth);
+      document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       router.push('/');
     } catch (error) {
       console.error('Error logging out:', error);

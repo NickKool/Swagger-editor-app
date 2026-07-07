@@ -137,6 +137,32 @@
         "badlyFormattedEmail": "The email address is badly formatted.",
         "weakPassword": "The password is too weak."
       }
+    },
+    "History": {
+      "title": "API Request History & Analytics",
+      "description": "Track your past API interactions and performance metrics",
+      "emptyState": {
+        "message": "You haven't made any API requests yet.",
+        "workspaceLink": "Go to Workspace"
+      },
+      "table": {
+        "timestamp": "Timestamp",
+        "method": "Method",
+        "url": "Endpoint / URL",
+        "statusCode": "Status",
+        "duration": "Duration",
+        "requestSize": "Req Size",
+        "responseSize": "Res Size",
+        "details": "Analytics",
+        "viewDetails": "View Details"
+      },
+      "analyticsModal": {
+        "title": "Detailed Analytics",
+        "close": "Close",
+        "success": "Success",
+        "failed": "Failed",
+        "errorDetails": "Error Details"
+      }
     }
   }
 }

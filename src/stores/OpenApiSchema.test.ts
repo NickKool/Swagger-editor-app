@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { validate, dereference } from '@scalar/openapi-parser';
-import { useOpenApiSchemaStore } from './OpenApiSchema.store';
-import { OpenApiSchemaStoreState } from './OpenApiSchema.types';
+import { useOpenApiSchemaStore } from './OpenApiSchema';
+import { fetchSchema } from '@/actions/schema';
 import { OpenAPI } from '@scalar/openapi-types';
 import YAML from 'yaml';
 
@@ -10,18 +10,54 @@ vi.mock('@scalar/openapi-parser', () => ({
   dereference: vi.fn(),
 }));
 
+vi.mock('@/actions/schema', () => ({
+  fetchSchema: vi.fn(),
+}));
+
 vi.mock('@/constants/open-api', () => ({
   DEFAULT_YAML_SCHEMA: 'openapi: 3.0.0',
 }));
 
-type ValidateReturn = Awaited<ReturnType<typeof validate>>;
-type DereferenceReturn = Awaited<ReturnType<typeof dereference>>;
+type ValidateResult = Awaited<ReturnType<typeof validate>>;
+type DereferenceResult = Awaited<ReturnType<typeof validate>>;
+
+const MOCK_VALIDATE_SUCCESS_RESULT: ValidateResult = {
+  valid: true,
+  version: '3.0',
+  specification: {
+    openapi: '3.0.0',
+    info: { title: 'Test', version: '1.0.0' },
+    paths: {},
+  },
+  schema: {
+    openapi: '3.0.0',
+    info: { title: 'Test', version: '1.0.0' },
+    paths: {},
+  },
+  errors: [],
+};
+
+const MOCK_VALIDATE_FAIL_RESULT: ValidateResult = {
+  valid: false,
+  errors: [{ message: 'SyntaxError' }],
+};
+
+const MOCK_SCHEMA_DOCUMENT: Awaited<ReturnType<typeof fetchSchema>> = {
+  rawText: 'openapi: 3.1.0',
+  updatedAt: '2026-01-01',
+  userId: 'user-123',
+  name: 'Test Schema',
+  version: '1.0.0',
+  formatUsed: 'yaml',
+};
 
 describe('useOpenApiSchemaStore', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.mocked(validate).mockReset();
     vi.mocked(dereference).mockReset();
+    vi.mocked(fetchSchema).mockReset();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 
     useOpenApiSchemaStore.setState({
       spec: 'openapi: 3.0.0',
@@ -29,12 +65,15 @@ describe('useOpenApiSchemaStore', () => {
       isValid: true,
       error: null,
       parsedSpec: null,
-    } as OpenApiSchemaStoreState);
+      hasInitialized: false,
+      isLoading: false,
+    });
   });
 
   afterEach(() => {
     vi.runOnlyPendingTimers();
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   it('should initialize with default states and values', () => {
@@ -45,17 +84,65 @@ describe('useOpenApiSchemaStore', () => {
     expect(state.error).toBeNull();
   });
 
+  it('should initialize with default spec when no uid is provided', async () => {
+    await useOpenApiSchemaStore.getState().initializeSchema(false);
+
+    const state = useOpenApiSchemaStore.getState();
+    expect(state.hasInitialized).toBe(true);
+    expect(state.spec).toBe('openapi: 3.0.0');
+    expect(vi.mocked(fetchSchema)).not.toHaveBeenCalled();
+  });
+
+  it('should fetch and set schema text when uid is provided', async () => {
+    vi.mocked(fetchSchema).mockResolvedValue(MOCK_SCHEMA_DOCUMENT);
+
+    await useOpenApiSchemaStore.getState().initializeSchema(false, 'schema-123');
+
+    const state = useOpenApiSchemaStore.getState();
+    expect(vi.mocked(fetchSchema)).toHaveBeenCalledWith('schema-123');
+    expect(state.spec).toBe('openapi: 3.1.0');
+    expect(state.hasInitialized).toBe(true);
+  });
+
+  it('should set default schema when fetched schema document lacks raw text', async () => {
+    vi.mocked(fetchSchema).mockResolvedValue(MOCK_SCHEMA_DOCUMENT);
+
+    await useOpenApiSchemaStore.getState().initializeSchema(false, 'schema-empty');
+
+    const state = useOpenApiSchemaStore.getState();
+    expect(state.spec).toBe('openapi: 3.1.0');
+    expect(state.hasInitialized).toBe(true);
+  });
+
+  it('should update error states and rethrow when initialization API fails', async () => {
+    vi.mocked(fetchSchema).mockRejectedValue(new Error('Network failure'));
+
+    await expect(
+      useOpenApiSchemaStore.getState().initializeSchema(false, 'schema-fail'),
+    ).rejects.toThrow('Network failure');
+
+    const state = useOpenApiSchemaStore.getState();
+    expect(state.isValid).toBe(false);
+    expect(state.hasInitialized).toBe(true);
+    expect(state.error).toEqual({
+      key: 'errors.fetchFailed',
+      fallback: 'Network failure',
+    });
+  });
+
+  it('should stop initialization routine when auth conditions are loading', async () => {
+    await useOpenApiSchemaStore.getState().initializeSchema(true);
+
+    const state = useOpenApiSchemaStore.getState();
+    expect(state.hasInitialized).toBe(false);
+  });
+
   it('should detect yaml format and set spec target values', async () => {
-    vi.mocked(validate).mockResolvedValue({
-      valid: true,
-      specification: {} as unknown,
-      version: '3.0',
-      schema: {} as unknown,
-    } as unknown as ValidateReturn);
+    vi.mocked(validate).mockResolvedValue(MOCK_VALIDATE_SUCCESS_RESULT);
 
     vi.mocked(dereference).mockResolvedValue({
-      schema: { openapi: '3.0.0' } as unknown as OpenAPI.Document,
-    } as unknown as DereferenceReturn);
+      schema: { openapi: '3.1.0' } as OpenAPI.Document,
+    });
 
     await useOpenApiSchemaStore.getState().setSpec('openapi: 3.1.0');
 
@@ -64,16 +151,11 @@ describe('useOpenApiSchemaStore', () => {
   });
 
   it('should detect json format when string begins with brackets', async () => {
-    vi.mocked(validate).mockResolvedValue({
-      valid: true,
-      specification: {} as unknown,
-      version: '3.0',
-      schema: {} as unknown,
-    } as unknown as ValidateReturn);
+    vi.mocked(validate).mockResolvedValue(MOCK_VALIDATE_SUCCESS_RESULT);
 
     vi.mocked(dereference).mockResolvedValue({
-      schema: {} as unknown as OpenAPI.Document,
-    } as unknown as DereferenceReturn);
+      schema: {} as OpenAPI.Document,
+    });
 
     await useOpenApiSchemaStore.getState().setSpec('{"openapi": "3.0.0"}');
 
@@ -81,36 +163,26 @@ describe('useOpenApiSchemaStore', () => {
   });
 
   it('should fallback to json when string matching brackets causes parse errors', async () => {
-    vi.mocked(validate).mockResolvedValue({
-      valid: false,
-      errors: [{ message: 'SyntaxError' } as unknown],
-    } as unknown as ValidateReturn);
+    vi.mocked(validate).mockResolvedValue(MOCK_VALIDATE_FAIL_RESULT);
 
     await useOpenApiSchemaStore.getState().setSpec('{ invalid json');
 
     expect(useOpenApiSchemaStore.getState().format).toBe('json');
   });
 
-  it('should debounce input validation parsing logic runs', async () => {
-    vi.mocked(validate).mockResolvedValue({
-      valid: true,
-      specification: {} as unknown,
-      version: '3.0',
-      schema: {} as unknown,
-    } as unknown as ValidateReturn);
+  it('should initialize with default schema when auth is not loading and uid is missing', async () => {
+    vi.mocked(validate).mockResolvedValue(MOCK_VALIDATE_SUCCESS_RESULT);
 
     vi.mocked(dereference).mockResolvedValue({
-      schema: {} as unknown as OpenAPI.Document,
-    } as unknown as DereferenceReturn);
+      schema: { openapi: '3.0.0' },
+    } as DereferenceResult);
 
-    await useOpenApiSchemaStore.getState().setSpec('test-1');
-    await useOpenApiSchemaStore.getState().setSpec('test-2');
+    await useOpenApiSchemaStore.getState().initializeSchema(false);
 
-    expect(validate).not.toHaveBeenCalled();
-
-    await vi.advanceTimersByTimeAsync(400);
-
-    expect(validate).toHaveBeenCalledTimes(1);
+    const state = useOpenApiSchemaStore.getState();
+    expect(state.hasInitialized).toBe(true);
+    expect(state.spec).toBe('openapi: 3.0.0');
+    expect(vi.mocked(fetchSchema)).not.toHaveBeenCalled();
   });
 
   it('should set error markers when parsing empty schemas', async () => {
@@ -125,8 +197,8 @@ describe('useOpenApiSchemaStore', () => {
   it('should handle syntax validation failures from parser engines', async () => {
     vi.mocked(validate).mockResolvedValue({
       valid: false,
-      errors: [{ message: 'Missing version parameter key' } as unknown],
-    } as unknown as ValidateReturn);
+      errors: [{ message: 'Missing version parameter key' }],
+    });
 
     await useOpenApiSchemaStore.getState().setSpec('invalid-yaml');
     await vi.advanceTimersByTimeAsync(400);
@@ -141,7 +213,7 @@ describe('useOpenApiSchemaStore', () => {
     vi.mocked(validate).mockResolvedValue({
       valid: false,
       errors: [],
-    } as unknown as ValidateReturn);
+    });
 
     await useOpenApiSchemaStore.getState().setSpec('invalid-yaml-no-message');
     await vi.advanceTimersByTimeAsync(400);
@@ -179,7 +251,11 @@ describe('useOpenApiSchemaStore', () => {
       spec: 'title: Test App',
       format: 'yaml',
       isValid: true,
-    } as OpenApiSchemaStoreState);
+      error: null,
+      parsedSpec: null,
+      hasInitialized: false,
+      isLoading: false,
+    });
 
     useOpenApiSchemaStore.getState().toggleFormat();
 
@@ -193,7 +269,11 @@ describe('useOpenApiSchemaStore', () => {
       spec: '{"title": "Test App"}',
       format: 'json',
       isValid: true,
-    } as OpenApiSchemaStoreState);
+      error: null,
+      parsedSpec: null,
+      hasInitialized: false,
+      isLoading: false,
+    });
 
     useOpenApiSchemaStore.getState().toggleFormat();
 
@@ -207,7 +287,11 @@ describe('useOpenApiSchemaStore', () => {
       spec: '!!!',
       format: 'yaml',
       isValid: false,
-    } as OpenApiSchemaStoreState);
+      error: null,
+      parsedSpec: null,
+      hasInitialized: false,
+      isLoading: false,
+    });
 
     useOpenApiSchemaStore.getState().toggleFormat();
 
@@ -219,7 +303,11 @@ describe('useOpenApiSchemaStore', () => {
       spec: '{"unclosed json',
       format: 'json',
       isValid: true,
-    } as OpenApiSchemaStoreState);
+      error: null,
+      parsedSpec: null,
+      hasInitialized: false,
+      isLoading: false,
+    });
 
     useOpenApiSchemaStore.getState().toggleFormat();
 
@@ -233,7 +321,11 @@ describe('useOpenApiSchemaStore', () => {
       spec: 'title: Test App',
       format: 'yaml',
       isValid: true,
-    } as OpenApiSchemaStoreState);
+      error: null,
+      parsedSpec: null,
+      hasInitialized: false,
+      isLoading: false,
+    });
 
     vi.spyOn(YAML, 'parse').mockImplementation(() => {
       throw 'Plain string error rejection';
@@ -244,7 +336,34 @@ describe('useOpenApiSchemaStore', () => {
     const state = useOpenApiSchemaStore.getState();
     expect(state.isValid).toBe(false);
     expect(state.error?.fallback).toBe('Syntax error');
-
     vi.restoreAllMocks();
+  });
+
+  it('should fallback to default schema when fetched schema document lacks raw text', async () => {
+    const mockEmptySchemaDocument = {
+      ...MOCK_SCHEMA_DOCUMENT,
+      rawText: '',
+    };
+
+    vi.mocked(fetchSchema).mockResolvedValue(mockEmptySchemaDocument);
+
+    await useOpenApiSchemaStore.getState().initializeSchema(false, 'schema-empty');
+
+    const state = useOpenApiSchemaStore.getState();
+    expect(state.spec).toBe('openapi: 3.0.0');
+    expect(state.hasInitialized).toBe(true);
+  });
+
+  it('should fallback to default error message text when initialization API rejects with a plain string instead of an Error object', async () => {
+    vi.mocked(fetchSchema).mockRejectedValue('Fatal database disconnection string');
+
+    await expect(
+      useOpenApiSchemaStore.getState().initializeSchema(false, 'schema-string-fail'),
+    ).rejects.toBe('Fatal database disconnection string');
+
+    const state = useOpenApiSchemaStore.getState();
+    expect(state.isValid).toBe(false);
+    expect(state.hasInitialized).toBe(true);
+    expect(state.error?.fallback).toBe('Failed to fetch schema');
   });
 });

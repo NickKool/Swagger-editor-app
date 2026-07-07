@@ -10,6 +10,10 @@ export interface OpenApiSchemaStoreState {
   isValid: boolean;
   error: LocalizedError | null;
   parsedSpec: OpenAPI.Document | null;
+  hasInitialized: boolean;
+  isLoading: boolean;
+
+  initializeSchema: (authLoading: boolean, uid?: string) => Promise<void>;
   setSpec: (newSpec: string) => Promise<void>;
   toggleFormat: () => void;
   validateAndParseSpec: () => Promise<void>;

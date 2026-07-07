@@ -10,7 +10,7 @@ const mockStore = vi.hoisted(() => ({
   parsedSpec: null as Record<string, unknown> | null,
 }));
 
-vi.mock('@/stores/OpenApiSchema.store', () => ({
+vi.mock('@/stores/OpenApiSchema', () => ({
   useOpenApiSchemaStore: (selector: (state: typeof mockStore) => unknown) => selector(mockStore),
 }));
 

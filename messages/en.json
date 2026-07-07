@@ -23,18 +23,38 @@
     "AuthContext": {
       "loading": "Preparing workspace"
     },
-    "SchemaEditor": {},
+    "SchemaEditor": {
+      "loadingSchema": "Loading saved schema..."
+    },
     "SchemaViewer": {
       "errorTitle": "Schema Error",
       "schemaReserveTitle": "API Reference",
       "schemaVersion": "Version: {version}",
       "schemaPathsDetected": "Paths detected: {paths}",
       "schemaWaiting": "Waiting for a valid OpenAPI configuration schema..."
+    },
+    "SaveSchemaButton": {
+      "title": "Save Schema",
+      "toasts": {
+        "loading": "Saving schema changes...",
+        "success": {
+          "title": "Changes saved!",
+          "description": "Your API schema configuration has been updated."
+        },
+        "error": {
+          "title": "Save failed",
+          "description": "An unexpected server error occurred."
+        }
+      }
+    },
+    "FormatToggleButton": {
+      "title": "Toggle Format"
     }
   },
   "stores": {
     "OpenAPISchema": {
       "errors": {
+        "fetchFailed": "Fetch schema failed.",
         "empty": "Specification cannot be empty.",
         "conversionFailed": "Failed to parse syntax for conversion.",
         "invalidStructure": "Schema structure validation failed.",

@@ -17,8 +17,7 @@ export default function ResponsiveSplitter({
   const [direction, setDirection] = useState<'horizontal' | 'vertical'>('horizontal');
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    if (!containerRef.current) return;
 
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -27,7 +26,7 @@ export default function ResponsiveSplitter({
       }
     });
 
-    observer.observe(container);
+    observer.observe(containerRef.current);
 
     return () => {
       observer.disconnect();

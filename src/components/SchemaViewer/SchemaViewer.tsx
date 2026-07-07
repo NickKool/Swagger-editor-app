@@ -3,7 +3,7 @@
 import { AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { useOpenApiSchemaStore } from '@/stores/OpenApiSchema.store';
+import { useOpenApiSchemaStore } from '@/stores/OpenApiSchema';
 
 export default function SchemaViewer() {
   const tStore = useTranslations('stores.OpenAPISchema');

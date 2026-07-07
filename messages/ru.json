@@ -23,18 +23,38 @@
     "AuthContext": {
       "loading": "Подготовка рабочего места"
     },
-    "SchemaEditor": {},
+    "SchemaEditor": {
+      "loadingSchema": "Загрузка сохраненной схемы..."
+    },
     "SchemaViewer": {
       "errorTitle": "Ошибка схемы",
       "schemaReserveTitle": "Пример API",
       "schemaVersion": "Версия: {version}",
       "schemaPathsDetected": "Путей обнаружено: {paths}",
       "schemaWaiting": "Ожидание действительной схемы конфигурации OpenAPI..."
+    },
+    "SaveSchemaButton": {
+      "title": "Сохранить схему",
+      "toasts": {
+        "loading": "Сохранение изменений схемы...",
+        "success": {
+          "title": "Изменения сохранены!",
+          "description": "Конфигурация вашей API схемы была обновлена."
+        },
+        "error": {
+          "title": "Ошибка сохранения",
+          "description": "Произошла непредвиденная ошибка сервера."
+        }
+      }
+    },
+    "FormatToggleButton": {
+      "title": "Переключить формат"
     }
   },
   "stores": {
     "OpenAPISchema": {
       "errors": {
+        "fetchFailed": "Не удалось получить схему.",
         "empty": "Спецификация не может быть пустой.",
         "conversionFailed": "Не удалось разобрать синтаксис для конвертации.",
         "invalidStructure": "Ошибка валидации структуры схемы.",

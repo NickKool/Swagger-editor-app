@@ -7,10 +7,12 @@ export const mockGetAuth = vi.fn(() => ({}) as Auth);
 export const mockCreateUserWithEmailAndPassword = vi.fn(() =>
   Promise.resolve({} as UserCredential),
 );
+export const mockSignInWithEmailAndPassword = vi.fn(() => Promise.resolve({} as UserCredential));
 
 vi.mock('firebase/auth', () => ({
   getAuth: mockGetAuth,
   onAuthStateChanged: mockOnAuthStateChanged,
   signOut: mockSignOut,
   createUserWithEmailAndPassword: mockCreateUserWithEmailAndPassword,
+  signInWithEmailAndPassword: mockSignInWithEmailAndPassword,
 }));

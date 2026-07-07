@@ -54,8 +54,8 @@ export default function SignUpPage() {
     try {
       setIsSubmitting(true);
       await createUserWithEmailAndPassword(auth, email.trim(), password);
-      toast.success('Account Created!', {
-        description: 'Welcome to Swagger Editor.',
+      toast.success(t('register.toastSuccess'), {
+        description: t('register.toastDescription'),
         position: 'top-center',
       });
       router.push('/');
@@ -64,21 +64,20 @@ export default function SignUpPage() {
 
       if (error instanceof FirebaseError) {
         if (error.code === 'auth/email-already-in-use') {
-          setEmailError('This email address is already registered.');
+          setEmailError(t('errors.emailInUse'));
         } else if (error.code === 'auth/invalid-email') {
-          setEmailError('The email address is badly formatted.');
+          setEmailError(t('errors.adlyFormattedEmail'));
         } else if (error.code === 'auth/weak-password') {
-          setPasswordError('The password is too weak.');
+          setPasswordError(t('errors.weakPassword'));
         } else {
-          toast.error('Registration Failed', {
-            description: error.message || 'An unexpected error occurred.',
+          toast.error(t('errors.toastError'), {
+            description: error.message || t('errors.unexpectedError'),
             position: 'top-center',
           });
         }
       } else {
-        const errorMessage =
-          error instanceof Error ? error.message : 'An unexpected error occurred.';
-        toast.error('Registration Failed', {
+        const errorMessage = error instanceof Error ? error.message : t('errors.unexpectedError');
+        toast.error(t('errors.toastError'), {
           description: errorMessage,
           position: 'top-center',
         });

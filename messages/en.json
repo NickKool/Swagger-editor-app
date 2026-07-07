@@ -78,7 +78,16 @@
         "title": "Create an Account",
         "description": "Enter your email and create a password",
         "alreadyHaveAccount": "Already have an account?",
-        "signInLink": "Sign In"
+        "signInLink": "Sign In",
+        "toastSuccess": "Account Created!.",
+        "toastDescription": "Welcome to Swagger Editor."
+      },
+      "login": {
+        "title": "Welcome Back",
+        "description": "Enter your email and password",
+        "dontHaveAccount": "Don't have an account?",
+        "signUpLink": "Sign Up",
+        "toastSuccess": "Successfully authenticated."
       },
       "labels": {
         "email": "Email Address",
@@ -90,11 +99,23 @@
       },
       "buttons": {
         "register": "Sign Up",
-        "processing": "Creating account..."
+        "signIn": "Sign In",
+        "processing": "Please wait..."
       },
       "errors": {
         "invalidEmail": "Please enter a valid email address (e.g., name@example.com).",
-        "invalidPassword": "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character."
+        "invalidPassword": "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.",
+        "requiredPassword": "Password is required.",
+        "invalidCredentials": "Invalid email or password. Please try again.",
+        "accountLockedTitle": "Account Locked Temporarily",
+        "accountLockedDesc": "Too many failed login attempts. Please try again later.",
+        "authFailedTitle": "Authentication Failed",
+        "loginFailedTitle": "Login Failed",
+        "unexpectedError": "An unexpected error occurred.",
+        "toastError": "Registration Failed",
+        "emailInUse": "This email address is already registered.",
+        "badlyFormattedEmail": "The email address is badly formatted.",
+        "weakPassword": "The password is too weak."
       }
     }
   }

@@ -32,6 +32,30 @@ export default function proxy(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
+  const cleanPath =
+    firstSegment && supportedLocales.includes(firstSegment as AppLocale)
+      ? `/${segments.slice(2).join('/')}`
+      : pathname;
+
+  const authToken = request.cookies.get('auth-token')?.value;
+
+  const currentLocale =
+    firstSegment && supportedLocales.includes(firstSegment as AppLocale)
+      ? firstSegment
+      : request.cookies.get(NEXT_LOCALE_COOKIE_KEY)?.value || routing.defaultLocale;
+
+  if (authToken && (cleanPath === '/sign-in' || cleanPath === '/sign-up')) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = `/${currentLocale}`;
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  if (!authToken && cleanPath === '/history') {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = `/${currentLocale}/sign-in`;
+    return NextResponse.redirect(redirectUrl);
+  }
+
   return intlMiddleware(request);
 }
 

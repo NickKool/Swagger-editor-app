@@ -107,9 +107,9 @@ describe('SignUpPage Component Workflow', () => {
 
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalledWith(
-        'Account Created!',
+        'pages.Auth.register.toastSuccess',
         expect.objectContaining({
-          description: 'Welcome to Swagger Editor.',
+          description: 'pages.Auth.register.toastDescription',
           position: 'top-center',
         }),
       );
@@ -136,9 +136,10 @@ describe('SignUpPage Component Workflow', () => {
     fireEvent.change(emailInput, { target: { value: 'duplicate@openapi.io' } });
     fireEvent.click(submitButton);
 
-    const emailErrorBlock = await screen.findByText('This email address is already registered.');
+    const emailErrorBlock = await screen.findByText('pages.Auth.errors.emailInUse');
     expect(emailErrorBlock).toBeInTheDocument();
   });
+
   it('should map FirebaseError correctly when email format is explicitly invalid on backend', async () => {
     vi.mocked(validateEmail).mockReturnValue(true);
     vi.mocked(validatePassword).mockReturnValue(true);
@@ -154,7 +155,7 @@ describe('SignUpPage Component Workflow', () => {
     fireEvent.change(emailInput, { target: { value: 'bad-format@openapi.io' } });
     fireEvent.click(submitButton);
 
-    const emailErrorBlock = await screen.findByText('The email address is badly formatted.');
+    const emailErrorBlock = await screen.findByText('pages.Auth.errors.adlyFormattedEmail');
     expect(emailErrorBlock).toBeInTheDocument();
   });
 
@@ -173,7 +174,7 @@ describe('SignUpPage Component Workflow', () => {
     fireEvent.change(passwordInput, { target: { value: '12345' } });
     fireEvent.click(submitButton);
 
-    const passwordErrorBlock = await screen.findByText('The password is too weak.');
+    const passwordErrorBlock = await screen.findByText('pages.Auth.errors.weakPassword');
     expect(passwordErrorBlock).toBeInTheDocument();
   });
 
@@ -197,7 +198,6 @@ describe('SignUpPage Component Workflow', () => {
     vi.mocked(validateEmail).mockReturnValue(true);
     vi.mocked(validatePassword).mockReturnValue(true);
 
-    // Симулируем редкий код ошибки Firebase, которого нет в наших if-else разветвлениях
     const unexpectedFirebaseError = new FirebaseError(
       'auth/internal-error',
       'Server isolated error.',
@@ -212,10 +212,9 @@ describe('SignUpPage Component Workflow', () => {
     fireEvent.change(emailInput, { target: { value: 'user@openapi.io' } });
     fireEvent.click(submitButton);
 
-    // Дожидаемся срабатывания ветки общего системного тоста из блока if (строка 73)
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        'Registration Failed',
+        'pages.Auth.errors.toastError',
         expect.objectContaining({
           description: 'Server isolated error.',
           position: 'top-center',
@@ -228,7 +227,6 @@ describe('SignUpPage Component Workflow', () => {
     vi.mocked(validateEmail).mockReturnValue(true);
     vi.mocked(validatePassword).mockReturnValue(true);
 
-    // Симулируем падение обычной нативной ошибки JS (строки 76-80)
     const nativeJavaScriptError = new Error('Network runtime exception');
     mockCreateUserWithEmailAndPassword.mockRejectedValue(nativeJavaScriptError);
 
@@ -240,10 +238,9 @@ describe('SignUpPage Component Workflow', () => {
     fireEvent.change(emailInput, { target: { value: 'native@openapi.io' } });
     fireEvent.click(submitButton);
 
-    // Дожидаемся вызова тоста из самого внешнего блока else
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        'Registration Failed',
+        'pages.Auth.errors.toastError',
         expect.objectContaining({
           description: 'Network runtime exception',
           position: 'top-center',

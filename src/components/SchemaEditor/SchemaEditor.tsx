@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl';
 
 import FormatToggleButton from '@/components/FormatToggleButton/FormatToggleButton';
 import SaveSchemaButton from '@/components/SaveSchemaButton/SaveSchemaButton';
+import SyncSchemaButton from '@/components/SyncSchemaButton/SyncSchemaButton';
 import { useOpenApiSchemaStore } from '@/stores/OpenApiSchema';
 import { useAuth } from '@/context/AuthContext';
 import { editorDarkTheme } from './EditorTheme';
@@ -27,7 +28,9 @@ export default function SchemaEditor() {
   const setSpec = useOpenApiSchemaStore((state) => state.setSpec);
   const format = useOpenApiSchemaStore((state) => state.format);
   const isSchemaLoading = useOpenApiSchemaStore((state) => state.isLoading);
+  const isSynced = useOpenApiSchemaStore((state) => state.isSynced);
   const initializeSchema = useOpenApiSchemaStore((state) => state.initializeSchema);
+  const setUnsynced = useOpenApiSchemaStore((state) => state.setUnsynced);
 
   const extensions = useMemo(() => {
     const extensionsMap = {
@@ -50,6 +53,12 @@ export default function SchemaEditor() {
     }
   }, [user?.uid, authLoading, initializeSchema]);
 
+  useEffect(() => {
+    if (!user) {
+      setUnsynced();
+    }
+  }, [user, setUnsynced]);
+
   const showLoader = authLoading || isSchemaLoading;
 
   return (
@@ -57,6 +66,7 @@ export default function SchemaEditor() {
       <div className="flex flex-row gap-2 p-2 w-full shrink-0 border-b bg-muted/30">
         <FormatToggleButton />
         {user && <SaveSchemaButton />}
+        {user && !isSynced && <SyncSchemaButton />}
       </div>
 
       <div className="flex-1 w-full min-h-0 overflow-hidden relative">

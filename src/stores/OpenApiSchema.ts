@@ -3,7 +3,9 @@ import YAML from 'yaml';
 import { validate, dereference } from '@scalar/openapi-parser';
 import { DEFAULT_YAML_SCHEMA } from '@/constants/open-api';
 import { OpenApiSchemaStoreState, SpecFormat } from './OpenApiSchema.types';
-import { fetchSchema } from '@/actions/schema';
+import { fetchSchema, saveSchema } from '@/actions/schema';
+
+const VALIDATION_DEBOUNCE_MS = 400;
 
 let validationTimeoutId: NodeJS.Timeout | null = null;
 
@@ -29,37 +31,39 @@ export const useOpenApiSchemaStore = create<OpenApiSchemaStoreState>((set, get) 
   error: null,
   parsedSpec: null,
   hasInitialized: false,
+  isSynced: false,
   isLoading: false,
+  isSaving: false,
 
-  initializeSchema: async (authLoading: boolean, uid?: string) => {
-    if (authLoading || get().hasInitialized || get().isLoading) return;
+  setUnsynced: () => {
+    set({ isSynced: false });
+  },
+
+  initializeSchema: async (authLoading: boolean, uid?: string, force?: boolean) => {
+    if (authLoading || get().isLoading || (get().hasInitialized && !force)) return;
 
     if (!uid) {
-      await get().setSpec(DEFAULT_YAML_SCHEMA);
+      await get().setSpec(DEFAULT_YAML_SCHEMA, false);
       set({ hasInitialized: true });
       return;
     }
 
-    set({ isLoading: true, error: null });
+    set({ hasInitialized: false, isLoading: true, error: null });
 
     try {
       const schemaDocument = await fetchSchema(uid);
       if (schemaDocument?.rawText) {
-        await get().setSpec(schemaDocument.rawText);
+        await get().setSpec(schemaDocument.rawText, true);
       } else {
-        await get().setSpec(DEFAULT_YAML_SCHEMA);
+        await get().setSpec(DEFAULT_YAML_SCHEMA, true);
       }
-      set({ hasInitialized: true });
+      set({ hasInitialized: true, isSynced: true });
     } catch (err: unknown) {
       console.error(err);
-      await get().setSpec(DEFAULT_YAML_SCHEMA);
+      await get().setSpec(DEFAULT_YAML_SCHEMA, false);
       set({
         isValid: false,
         hasInitialized: true,
-        error: {
-          key: 'errors.fetchFailed',
-          fallback: err instanceof Error ? err.message : 'Failed to fetch schema',
-        },
       });
       throw err;
     } finally {
@@ -67,13 +71,38 @@ export const useOpenApiSchemaStore = create<OpenApiSchemaStoreState>((set, get) 
     }
   },
 
-  setSpec: async (newSpec: string) => {
+  saveCurrentSchema: async (uid: string) => {
+    const { spec, format, parsedSpec, isValid, isSaving } = get();
+
+    if (!isValid || !parsedSpec || isSaving) return;
+
+    set({ isSaving: true });
+
+    try {
+      await saveSchema({
+        userId: uid,
+        spec,
+        format,
+        parsedSpec,
+      });
+
+      set({ isSynced: true });
+    } catch (err: unknown) {
+      console.error(err);
+      throw err;
+    } finally {
+      set({ isSaving: false });
+    }
+  },
+
+  setSpec: async (newSpec: string, synced?: boolean) => {
     const detectedFormat = detectFormat(newSpec);
 
-    set({
+    set((state) => ({
       spec: newSpec,
       format: detectedFormat,
-    });
+      isSynced: synced === undefined ? state.isSynced : synced,
+    }));
 
     if (validationTimeoutId) {
       clearTimeout(validationTimeoutId);
@@ -81,7 +110,7 @@ export const useOpenApiSchemaStore = create<OpenApiSchemaStoreState>((set, get) 
 
     validationTimeoutId = setTimeout(async () => {
       await get().validateAndParseSpec();
-    }, 400);
+    }, VALIDATION_DEBOUNCE_MS);
   },
 
   toggleFormat: () => {

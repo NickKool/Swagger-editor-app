@@ -14,7 +14,9 @@
       "signUp": "Sign Up",
       "about": "About Us",
       "history": "History",
-      "signOut": "Sign Out"
+      "signOut": "Sign Out",
+      "language": "Language:",
+      "hamburgerMenu": "Hamburger Menu"
     },
     "Footer": {
       "about": "About Us",

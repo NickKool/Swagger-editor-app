@@ -98,7 +98,7 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 bg-background">
+    <div className="flex-1 flex items-center justify-center p-4 bg-background">
       <Card className="w-full max-w-md shadow-lg border-border">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold tracking-tight font-heading text-foreground">

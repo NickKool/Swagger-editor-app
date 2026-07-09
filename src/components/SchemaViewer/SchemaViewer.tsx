@@ -3,7 +3,10 @@
 import { AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { useOpenApiSchemaStore } from '@/stores/OpenApiSchema';
+import { useOpenApiSchemaStore } from '@/stores/OpenApiSchema.store';
+import { groupPathsByTag } from './utils/sorting';
+import { useMemo } from 'react';
+import EndpointCard from './EndpointList/EndpointCard';
 
 export default function SchemaViewer() {
   const tStore = useTranslations('stores.OpenAPISchema');
@@ -13,8 +16,10 @@ export default function SchemaViewer() {
   const error = useOpenApiSchemaStore((state) => state.error);
   const parsedSpec = useOpenApiSchemaStore((state) => state.parsedSpec);
 
+  const sorted = useMemo(() => (parsedSpec ? groupPathsByTag(parsedSpec) : {}), [parsedSpec]);
+
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden p-4 bg-background">
+    <div className="w-full h-full flex flex-col overflow-hidden p-4 bg-background gap-2">
       <div className="w-full shrink-0 transition-all duration-200">
         {!isValid && error && (
           <div className="flex items-start gap-3 p-4 rounded-lg border border-destructive/30 bg-destructive/10 text-destructive shadow-sm animate-in fade-in slide-in-from-top-1 duration-200">
@@ -31,7 +36,7 @@ export default function SchemaViewer() {
         )}
       </div>
 
-      <div className="flex-1 w-full overflow-auto">
+      <div className="flex-1 w-full min-h-0 overflow-y-auto">
         {isValid && parsedSpec ? (
           <div className="space-y-4">
             <div>
@@ -47,6 +52,12 @@ export default function SchemaViewer() {
               {t('schemaPathsDetected', {
                 paths: parsedSpec.paths ? Object.keys(parsedSpec.paths).length : 0,
               })}
+            </div>
+
+            <div className="space-y-3 pt-2">
+              {Object.entries(sorted).map(([tag, paths]) => (
+                <EndpointCard key={tag} tag={tag} paths={paths} />
+              ))}
             </div>
           </div>
         ) : (

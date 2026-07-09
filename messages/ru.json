@@ -49,8 +49,27 @@
     },
     "FormatToggleButton": {
       "title": "Переключить формат"
-    }
-  },
+    },
+    "EndpointItem": {
+      "table": {
+        "name": "Имя",
+        "type": "Тип",
+        "required": "Обязателен",
+        "description": "Описание"
+      },
+      "requestBody": "Тело запроса",
+      "responses": "Ответы",
+      "tabs": {
+        "schema": "Схема",
+        "example": "Пример"
+      },
+      "paramLocation": {
+        "path": "Path-параметры",
+        "query": "Query-параметры",
+        "header": "Headers",
+        "cookie": "Cookie"
+      }
+    },
   "stores": {
     "OpenAPISchema": {
       "errors": {

@@ -34,15 +34,15 @@ export default function ResponsiveSplitter({
   }, []);
 
   return (
-    <div ref={containerRef} className="flex flex-col flex-1 w-full">
-      <ResizablePanelGroup orientation={direction} className="flex flex-col flex-1 w-full">
-        <ResizablePanel defaultSize="50%" minSize="25%" className="flex flex-col w-full">
+    <div ref={containerRef} className="flex flex-col flex-1 w-full min-h-0">
+      <ResizablePanelGroup orientation={direction} className="flex flex-col flex-1 w-full min-h-0">
+        <ResizablePanel defaultSize="50%" minSize="25%" className="flex flex-col w-full min-h-0">
           {leftChild}
         </ResizablePanel>
 
         <ResizableHandle withHandle />
 
-        <ResizablePanel defaultSize="50%" minSize="25%" className="flex flex-col w-full">
+        <ResizablePanel defaultSize="50%" minSize="25%" className="flex flex-col w-full min-h-0">
           {rightChild}
         </ResizablePanel>
       </ResizablePanelGroup>

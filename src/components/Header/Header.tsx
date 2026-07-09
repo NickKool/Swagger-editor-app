@@ -22,56 +22,58 @@ export default function Header() {
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full p-5 flex gap-4 justify-between items-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 text-foreground">
-      <div className="flex items-center">
-        <Link href="/" onClick={closeMenu}>
-          <Image src={logo} alt="Logo" width={48} height={48} loading="eager" />
-        </Link>
-      </div>
+    <header className="sticky top-0 z-50 w-full">
+      <div className="w-full p-5 flex gap-4 justify-between items-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 text-foreground">
+        <div className="flex items-center">
+          <Link href="/" onClick={closeMenu}>
+            <Image src={logo} alt="Logo" width={48} height={48} loading="eager" />
+          </Link>
+        </div>
 
-      <nav className="hidden flex-1 md:flex gap-2 items-center">
-        <Button asChild variant="outline">
-          <Link href="/about">{t('about')}</Link>
-        </Button>
-        {user && (
+        <nav className="hidden flex-1 md:flex gap-2 items-center">
           <Button asChild variant="outline">
-            <Link href="/history">{t('history')}</Link>
+            <Link href="/about">{t('about')}</Link>
           </Button>
-        )}
-      </nav>
-
-      <div className="hidden md:flex items-center gap-4">
-        <nav className="flex gap-2">
-          {user ? (
-            <Button variant="destructive" onClick={logout}>
-              {t('signOut')}
+          {user && (
+            <Button asChild variant="outline">
+              <Link href="/history">{t('history')}</Link>
             </Button>
-          ) : (
-            <>
-              <Button asChild variant="default">
-                <Link href="/sign-in">{t('signIn')}</Link>
-              </Button>
-              <Button asChild variant="default">
-                <Link href="/sign-up">{t('signUp')}</Link>
-              </Button>
-            </>
           )}
         </nav>
-        <div className="flex gap-2">
-          <LanguageSelector />
+
+        <div className="hidden md:flex items-center gap-4">
+          <nav className="flex gap-2">
+            {user ? (
+              <Button variant="destructive" onClick={logout}>
+                {t('signOut')}
+              </Button>
+            ) : (
+              <>
+                <Button asChild variant="default">
+                  <Link href="/sign-in">{t('signIn')}</Link>
+                </Button>
+                <Button asChild variant="default">
+                  <Link href="/sign-up">{t('signUp')}</Link>
+                </Button>
+              </>
+            )}
+          </nav>
+          <div className="flex gap-2">
+            <LanguageSelector />
+            <ThemeSelector />
+          </div>
+        </div>
+
+        <div className="flex md:hidden items-center gap-2">
           <ThemeSelector />
+          <Button variant="ghost" size="icon" onClick={toggleMenu} aria-label={t('hamburgerMenu')}>
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </Button>
         </div>
       </div>
 
-      <div className="flex md:hidden items-center gap-2">
-        <ThemeSelector />
-        <Button variant="ghost" size="icon" onClick={toggleMenu} aria-label={t('hamburgerMenu')}>
-          {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </Button>
-      </div>
-
       {isMenuOpen && (
-        <div className="absolute top-full left-0 w-full bg-background border-b p-5 flex flex-col gap-4 md:hidden shadow-lg z-50">
+        <div className="absolute top-full left-0 w-full p-5 flex flex-col gap-4 md:hidden shadow-lg z-50 border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
           <nav className="flex flex-col gap-2">
             <Button asChild variant="outline" onClick={closeMenu} className="justify-center">
               <Link href="/about">{t('about')}</Link>

@@ -19,9 +19,11 @@ import {
 import { useTranslations } from 'next-intl';
 import getExamples from '../utils/getExamples';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import TryItPanel from './TryItPanel';
 
 interface EndpointItemProps {
   operation: ApiOperation;
+  baseUrl: string;
 }
 
 const METHODS_COLORS = {
@@ -33,7 +35,7 @@ const METHODS_COLORS = {
 
 const PARAM_LOCATIONS = ['path', 'query', 'header', 'cookie'] as const;
 
-export default function EndpointItem({ operation }: EndpointItemProps) {
+export default function EndpointItem({ operation, baseUrl }: EndpointItemProps) {
   const { summary, description, parameters, requestBody, responses } = operation;
 
   const method = operation.method.toLowerCase() as keyof typeof METHODS_COLORS;
@@ -60,7 +62,7 @@ export default function EndpointItem({ operation }: EndpointItemProps) {
 
             return (
               <div key={location}>
-                <h4 className="font-semibold">{`paramLocation.${location}`}</h4>
+                <h4 className="font-semibold">{t(`paramLocation.${location}`)}</h4>
 
                 <Table>
                   <TableHeader>
@@ -161,6 +163,7 @@ export default function EndpointItem({ operation }: EndpointItemProps) {
               </div>
             ))}
           </div>
+          <TryItPanel operation={operation} baseUrl={baseUrl} />
         </AccordionContent>
       </AccordionItem>
     </Accordion>

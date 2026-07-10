@@ -79,9 +79,11 @@ describe('POST /api/proxy', () => {
   });
 
   it('returns a 500 proxy error when the upstream fetch throws', async () => {
+    const errorMessage = 'network down';
+
     vi.stubGlobal(
       'fetch',
-      vi.fn(() => Promise.reject(new Error('network down'))) as unknown as typeof fetch,
+      vi.fn(() => Promise.reject(new Error(errorMessage))) as unknown as typeof fetch,
     );
 
     const res = await POST(
@@ -93,7 +95,7 @@ describe('POST /api/proxy', () => {
       status: 0,
       statusText: 'Proxy Error',
       headers: {},
-      body: 'Proxy request failed',
+      body: errorMessage,
     });
   });
 });

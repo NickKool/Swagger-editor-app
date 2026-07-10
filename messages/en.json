@@ -49,8 +49,8 @@
     },
     "FormatToggleButton": {
       "title": "Toggle Format"
-  },
-  "EndpointItem": {
+    },
+    "EndpointItem": {
       "table": {
         "name": "Name",
         "type": "Type",
@@ -68,8 +68,17 @@
         "query": "Query parameters",
         "header": "Headers",
         "cookie": "Cookie"
+      },
+      "tryIt": {
+        "execute": "Execute",
+        "copied": "Copied!",
+        "generate": "Generate URL",
+        "status": "Status",
+        "responseHeaders": "Response Headers",
+        "responseBody": "Response Body"
       }
-    },
+    }
+  },
   "stores": {
     "OpenAPISchema": {
       "errors": {

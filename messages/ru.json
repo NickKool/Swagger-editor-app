@@ -68,8 +68,17 @@
         "query": "Query-параметры",
         "header": "Headers",
         "cookie": "Cookie"
+      },
+      "tryIt": {
+        "execute": "Выполнить",
+        "copied": "Скопировано!",
+        "generate": "Сгенерировать URL",
+        "status": "Статус",
+        "responseHeaders": "Заголовки ответа",
+        "responseBody": "Тело ответа"
       }
-    },
+    }
+  },
   "stores": {
     "OpenAPISchema": {
       "errors": {

@@ -27,7 +27,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <NextIntlClientProvider locale={locale} messages={messages}>
       <AuthProvider>
         <Header />
-        <main className="flex flex-col flex-1 min-h-0">{children}</main>
+        <main className="flex flex-col flex-1">{children}</main>
+        <Toaster />
         <Footer />
       </AuthProvider>
     </NextIntlClientProvider>

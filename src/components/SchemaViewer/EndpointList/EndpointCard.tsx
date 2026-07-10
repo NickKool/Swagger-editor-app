@@ -1,27 +1,27 @@
 import { Accordion, AccordionContent } from '@/components/ui/accordion';
-import { ApiOperation } from '../utils/sorting';
+import { ApiOperationTag } from '../utils/sortedSchema';
 import EndpointItem from './EndpointItem';
 import { AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 interface EndpointCardProps {
-  tag: string;
-  paths: ApiOperation[];
+  tag: ApiOperationTag;
   baseUrl: string;
 }
 
-export default function EndpointCard({ tag, paths, baseUrl }: EndpointCardProps) {
+export default function EndpointCard({ tag, baseUrl }: EndpointCardProps) {
   return (
-    <Accordion type="single" defaultValue={tag} collapsible>
-      <AccordionItem value={tag}>
-        <AccordionTrigger>
-          <span>{tag}</span>
+    <Accordion type="single" defaultValue={tag.name} collapsible>
+      <AccordionItem value={tag.name}>
+        <AccordionTrigger className="hover:no-underline cursor-pointer items-center">
+          <b className="text-lg">{tag.name}</b>
+          <p className="font-medium text-muted-foreground">{tag.description}</p>
         </AccordionTrigger>
-        <AccordionContent className="pr-2 py-1">
+        <AccordionContent>
           <div className="flex flex-col gap-2">
-            {paths.map((path) => (
+            {tag.operations.map((operation) => (
               <EndpointItem
-                key={`${path.method}-${path.path}`}
-                operation={path}
+                key={`${operation.method}-${operation.path}`}
+                operation={operation}
                 baseUrl={baseUrl}
               />
             ))}

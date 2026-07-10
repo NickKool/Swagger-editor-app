@@ -28,9 +28,7 @@
     },
     "SchemaViewer": {
       "errorTitle": "Ошибка схемы",
-      "schemaReserveTitle": "Пример API",
       "schemaVersion": "Версия: {version}",
-      "schemaPathsDetected": "Путей обнаружено: {paths}",
       "schemaWaiting": "Ожидание действительной схемы конфигурации OpenAPI..."
     },
     "SaveSchemaButton": {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ApiOperation } from '../utils/sorting';
+import { ApiOperation } from '../utils/sortedSchema';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';

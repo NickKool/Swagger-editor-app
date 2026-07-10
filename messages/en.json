@@ -28,9 +28,7 @@
     },
     "SchemaViewer": {
       "errorTitle": "Schema Error",
-      "schemaReserveTitle": "API Reference",
       "schemaVersion": "Version: {version}",
-      "schemaPathsDetected": "Paths detected: {paths}",
       "schemaWaiting": "Waiting for a valid OpenAPI configuration schema..."
     },
     "SaveSchemaButton": {

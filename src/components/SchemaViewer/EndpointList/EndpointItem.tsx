@@ -6,7 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { ApiOperation } from '../utils/sorting';
+import { ApiOperation } from '../utils/sortedSchema';
 import { Badge } from '@/components/ui/badge';
 import {
   Table,
@@ -31,6 +31,10 @@ const METHODS_COLORS = {
   post: '#49cc90',
   put: '#fca130',
   delete: '#f93e3e',
+  patch: '#50e3c2',
+  options: '#0d5aa7',
+  head: '#9012fe',
+  trace: '#78909c',
 } as const;
 
 const PARAM_LOCATIONS = ['path', 'query', 'header', 'cookie'] as const;
@@ -44,14 +48,17 @@ export default function EndpointItem({ operation, baseUrl }: EndpointItemProps) 
   const t = useTranslations('components.EndpointItem');
 
   return (
-    <Accordion type="single" collapsible>
+    <Accordion type="single" collapsible style={{ borderColor: badgeColor }}>
       <AccordionItem value={operation.method}>
-        <AccordionTrigger>
-          <Badge className="uppercase text-white" style={{ backgroundColor: `${badgeColor}80` }}>
+        <AccordionTrigger className="hover:no-underline cursor-pointer items-center">
+          <Badge
+            className="uppercase text-white w-[72px]"
+            style={{ backgroundColor: `${badgeColor}80` }}
+          >
             {operation.method}
           </Badge>
           <b>{operation.path}</b>
-          <span>{summary && <p className="font-medium">{summary}</p>}</span>
+          <span>{summary && <p className="font-medium text-muted-foreground">{summary}</p>}</span>
         </AccordionTrigger>
         <AccordionContent className="space-y-4 overflow-auto">
           {description && <p className="text-sm text-muted-foreground">{description}</p>}

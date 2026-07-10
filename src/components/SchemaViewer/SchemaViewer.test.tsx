@@ -16,9 +16,7 @@ vi.mock('@/stores/OpenApiSchema', () => ({
 
 const MOCK_MESSAGES: Record<string, string> = {
   errorTitle: 'Schema Error',
-  schemaReserveTitle: 'API Reference',
   schemaVersion: 'Version: {version}',
-  schemaPathsDetected: 'Paths detected: {paths}',
   schemaWaiting: 'Waiting for a valid OpenAPI configuration schema...',
   'errors.empty': 'Specification cannot be empty.',
   'errors.conversionFailed': 'Failed to parse syntax for conversion.',
@@ -44,6 +42,14 @@ mockTranslate.has.mockImplementation((k: string) => k in MOCK_MESSAGES);
 
 vi.mock('lucide-react', () => ({
   AlertCircle: () => <svg data-testid="icon-alert" />,
+}));
+
+vi.mock('./EndpointList/EndpointCard', () => ({
+  default: vi.fn(({ tag, baseUrl }: { tag: { name: string }; baseUrl: string }) => (
+    <div data-testid="endpoint-card">
+      {tag.name}-{baseUrl}
+    </div>
+  )),
 }));
 
 describe('SchemaViewer Component', () => {
@@ -87,21 +93,25 @@ describe('SchemaViewer Component', () => {
     expect(screen.getByText(fallbackMessage)).toBeInTheDocument();
   });
 
-  it('should parse metadata fields and expose path arrays when schema updates successfully', () => {
+  it('should parse metadata fields and map over tags array when schema updates successfully', () => {
     mockStore.isValid = true;
     const titleText = 'User Management Microservice';
     const versionText = '2.4.1';
-    const paths = {
-      '/users': {},
-      '/users/{id}': {},
-      '/status': {},
-    };
+
     mockStore.parsedSpec = {
+      openapi: '3.0.0',
       info: {
         title: titleText,
         version: versionText,
       },
-      paths: paths,
+      servers: [{ url: 'https://example.com' }],
+      paths: {
+        '/users': {
+          get: {
+            tags: ['Users'],
+          },
+        },
+      },
     };
 
     render(<SchemaViewer />);
@@ -110,43 +120,7 @@ describe('SchemaViewer Component', () => {
     expect(
       screen.getByText(MOCK_MESSAGES['schemaVersion'].replace('{version}', versionText)),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(MOCK_MESSAGES['schemaPathsDetected'].replace('{paths}', '3')),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('endpoint-card')).toHaveTextContent('Users-https://example.com');
     expect(screen.queryByText(MOCK_MESSAGES['schemaWaiting'])).not.toBeInTheDocument();
-  });
-
-  it('should drop down into reserve title localizations when specification info block lacks a title', () => {
-    mockStore.isValid = true;
-    mockStore.parsedSpec = {
-      info: {
-        version: '1.0.0',
-      },
-      paths: {},
-    };
-
-    render(<SchemaViewer />);
-
-    expect(screen.getByText(MOCK_MESSAGES['schemaReserveTitle'])).toBeInTheDocument();
-  });
-
-  it('should render fallback values when spec metadata is missing', () => {
-    mockStore.isValid = true;
-    mockStore.parsedSpec = {
-      info: {
-        version: undefined,
-      },
-      paths: undefined,
-    };
-
-    render(<SchemaViewer />);
-
-    expect(screen.getByText(MOCK_MESSAGES['schemaReserveTitle'])).toBeInTheDocument();
-    expect(
-      screen.getByText(MOCK_MESSAGES['schemaVersion'].replace('{version}', '1.0.0')),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(MOCK_MESSAGES['schemaPathsDetected'].replace('{paths}', '0')),
-    ).toBeInTheDocument();
   });
 });

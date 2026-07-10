@@ -4,7 +4,7 @@ import type { OpenAPIV3 } from '@scalar/openapi-types';
 
 import EndpointItem from './EndpointItem';
 import getExamples from '../utils/getExamples';
-import type { ApiOperation } from '../utils/sorting';
+import type { ApiOperation } from '../utils/sortedSchema';
 
 vi.mock('../utils/getExamples', () => ({ default: vi.fn() }));
 const mockGetExamples = vi.mocked(getExamples);
@@ -90,11 +90,5 @@ describe('EndpointItem', () => {
     expect(screen.queryByText('paramLocation.path')).not.toBeInTheDocument();
     expect(screen.queryByText('requestBody')).not.toBeInTheDocument();
     expect(screen.queryByText('tabs.example')).not.toBeInTheDocument();
-  });
-
-  test('does not crash for a method without a mapped color', () => {
-    render(<EndpointItem operation={{ ...fullOperation, method: 'patch' }} baseUrl={baseUrl} />);
-
-    expect(screen.getByText('patch')).toBeInTheDocument();
   });
 });

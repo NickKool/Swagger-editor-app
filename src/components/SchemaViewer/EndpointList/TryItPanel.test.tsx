@@ -3,7 +3,7 @@ import { vi, describe, test, expect, beforeEach, afterEach } from 'vitest';
 import type { OpenAPIV3 } from '@scalar/openapi-types';
 
 import TryItPanel from './TryItPanel';
-import type { ApiOperation } from '../utils/sorting';
+import type { ApiOperation } from '../utils/sortedSchema';
 
 const baseUrl = 'https://api.example.com';
 

@@ -3,7 +3,7 @@
 import { AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { useOpenApiSchemaStore } from '@/stores/OpenApiSchema.store';
+import { useOpenApiSchemaStore } from '@/stores/OpenApiSchema';
 import { groupPathsByTag } from './utils/sorting';
 import { useMemo } from 'react';
 import EndpointCard from './EndpointList/EndpointCard';
@@ -56,7 +56,12 @@ export default function SchemaViewer() {
 
             <div className="space-y-3 pt-2">
               {Object.entries(sorted).map(([tag, paths]) => (
-                <EndpointCard key={tag} tag={tag} paths={paths} />
+                <EndpointCard
+                  key={tag}
+                  tag={tag}
+                  paths={paths}
+                  baseUrl={parsedSpec?.servers?.[0]?.url ?? ''}
+                />
               ))}
             </div>
           </div>

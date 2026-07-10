@@ -60,7 +60,6 @@ export default function SaveSchemaButton() {
         };
       },
       error: (err: unknown) => {
-        console.error('Firebase save error:', err);
         setStatus('error');
         timeoutRef.current = setTimeout(() => {
           setStatus('idle');

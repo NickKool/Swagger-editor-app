@@ -59,7 +59,6 @@ export const useOpenApiSchemaStore = create<OpenApiSchemaStoreState>((set, get) 
       }
       set({ hasInitialized: true, isSynced: true });
     } catch (err: unknown) {
-      console.error(err);
       await get().setSpec(DEFAULT_YAML_SCHEMA, false);
       set({
         isValid: false,
@@ -88,8 +87,8 @@ export const useOpenApiSchemaStore = create<OpenApiSchemaStoreState>((set, get) 
 
       set({ isSynced: true });
     } catch (err: unknown) {
-      console.error(err);
-      throw err;
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      throw new Error(`Schema save failed: ${errorMessage}`);
     } finally {
       set({ isSaving: false });
     }

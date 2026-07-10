@@ -42,15 +42,7 @@ export default function SchemaEditor() {
   }, [format]);
 
   useEffect(() => {
-    if (authLoading) return;
-
-    if (user?.uid) {
-      initializeSchema(authLoading, user.uid).catch((err) => {
-        console.error('Failed to initialize schema:', err);
-      });
-    } else {
-      initializeSchema(authLoading);
-    }
+    initializeSchema(authLoading, user?.uid);
   }, [user?.uid, authLoading, initializeSchema]);
 
   useEffect(() => {

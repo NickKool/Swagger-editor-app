@@ -162,27 +162,6 @@ describe('SchemaEditor', () => {
     expect(initializeSchemaMock).toHaveBeenCalledWith(false, 'user_999');
   });
 
-  it('should catch and log errors if initializeSchema fails', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-    const mockError = new Error('Failed validation');
-    const initializeSchemaMock = vi.fn().mockRejectedValue(mockError);
-    setMockState({ initializeSchema: initializeSchemaMock });
-
-    vi.mocked(useAuth).mockReturnValue({
-      user: { uid: 'user_999' },
-      loading: false,
-    } as unknown as AuthContextType);
-
-    render(<SchemaEditor />);
-
-    await vi.waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to initialize schema:', mockError);
-    });
-
-    consoleSpy.mockRestore();
-  });
-
   it('should show spinner when auth state or schema layer is loading', () => {
     setMockState({ isLoading: true });
 
@@ -279,19 +258,5 @@ describe('SchemaEditor', () => {
 
     const editor = screen.getByTestId('codemirror');
     expect(editor).toHaveAttribute('data-extensions-count', '4');
-  });
-
-  it('should skip schema initialization if authentication is currently loading', () => {
-    const initializeSchemaMock = vi.fn().mockResolvedValue(undefined);
-    setMockState({ initializeSchema: initializeSchemaMock });
-
-    vi.mocked(useAuth).mockReturnValue({
-      user: null,
-      loading: true,
-    } as unknown as AuthContextType);
-
-    render(<SchemaEditor />);
-
-    expect(initializeSchemaMock).not.toHaveBeenCalled();
   });
 });

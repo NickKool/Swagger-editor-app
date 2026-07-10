@@ -219,7 +219,6 @@ describe('SyncSchemaButton', () => {
   });
 
   it('should show error icon and change variant then revert to idle after failed sync', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const mockError = new Error('Sync connection reset');
     setMockState({ initializeSchema: vi.fn().mockRejectedValue(mockError) });
 
@@ -232,7 +231,6 @@ describe('SyncSchemaButton', () => {
 
     expect(button).toHaveAttribute('data-variant', 'destructive');
     expect(screen.getByTestId('icon-error')).toBeInTheDocument();
-    expect(consoleSpy).toHaveBeenCalledWith('Firebase sync error:', mockError);
 
     act(() => {
       vi.advanceTimersByTime(3000);
@@ -240,8 +238,6 @@ describe('SyncSchemaButton', () => {
 
     expect(button).toHaveAttribute('data-variant', 'outline');
     expect(screen.queryByTestId('icon-error')).not.toBeInTheDocument();
-
-    consoleSpy.mockRestore();
   });
 
   it('should safely abort if clicked repeatedly while status is loading', async () => {

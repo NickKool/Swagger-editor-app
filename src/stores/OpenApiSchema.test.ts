@@ -438,4 +438,14 @@ describe('useOpenApiSchemaStore', () => {
     expect(useOpenApiSchemaStore.getState().isSaving).toBe(false);
     expect(useOpenApiSchemaStore.getState().isSynced).toBe(false);
   });
+
+  it('should format message properly and throw customized error when saveSchema rejects with a plain string', async () => {
+    vi.mocked(saveSchema).mockRejectedValue('Database disconnected');
+
+    await expect(useOpenApiSchemaStore.getState().saveCurrentSchema('user-123')).rejects.toThrow(
+      'Schema save failed: Database disconnected',
+    );
+
+    expect(useOpenApiSchemaStore.getState().isSaving).toBe(false);
+  });
 });

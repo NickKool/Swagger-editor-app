@@ -59,7 +59,6 @@ export default function SyncSchemaButton() {
         };
       },
       error: (err: unknown) => {
-        console.error('Firebase sync error:', err);
         setStatus('error');
         timeoutRef.current = setTimeout(() => {
           setStatus('idle');

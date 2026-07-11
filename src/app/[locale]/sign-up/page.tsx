@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { FirebaseError } from 'firebase/app';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { toast } from 'sonner';
+
 import { Link, useRouter } from '@/i18n/navigation';
 import { validateEmail, validatePassword } from '@/lib/validate';
-
 import { auth } from '@/lib/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { FirebaseError } from 'firebase/app';
-import { toast } from 'sonner';
 
 import {
   Card,
@@ -60,8 +60,6 @@ export default function SignUpPage() {
       });
       router.push('/');
     } catch (error) {
-      console.error('Firebase SignUp Error:', error);
-
       if (error instanceof FirebaseError) {
         if (error.code === 'auth/email-already-in-use') {
           setEmailError(t('errors.emailInUse'));
@@ -70,14 +68,14 @@ export default function SignUpPage() {
         } else if (error.code === 'auth/weak-password') {
           setPasswordError(t('errors.weakPassword'));
         } else {
-          toast.error(t('errors.toastError'), {
+          toast.error(t('errors.registrationError'), {
             description: error.message || t('errors.unexpectedError'),
             position: 'top-center',
           });
         }
       } else {
         const errorMessage = error instanceof Error ? error.message : t('errors.unexpectedError');
-        toast.error(t('errors.toastError'), {
+        toast.error(t('errors.registrationError'), {
           description: errorMessage,
           position: 'top-center',
         });

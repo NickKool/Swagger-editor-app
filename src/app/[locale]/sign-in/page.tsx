@@ -2,14 +2,13 @@
 
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Link, useRouter } from '@/i18n/navigation';
-import { validateEmail } from '@/lib/validate';
-
-import { auth } from '@/lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
-
 import { toast } from 'sonner';
+
+import { Link, useRouter } from '@/i18n/navigation';
+import { validateEmail } from '@/lib/validate';
+import { auth } from '@/lib/firebase';
 
 import {
   Card,
@@ -64,8 +63,6 @@ export default function SignInPage() {
 
       router.push('/');
     } catch (error) {
-      console.error('Firebase SignIn Error:', error);
-
       if (error instanceof FirebaseError) {
         if (
           error.code === 'auth/user-not-found' ||
@@ -85,8 +82,7 @@ export default function SignInPage() {
           });
         }
       } else {
-        const errorMessage =
-          error instanceof Error ? error.message : 'An unexpected error occurred.';
+        const errorMessage = error instanceof Error ? error.message : t('errors.unexpectedError');
         toast.error(t('errors.loginFailedTitle'), {
           description: errorMessage,
           position: 'top-center',

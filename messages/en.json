@@ -23,7 +23,17 @@
       "developed": "Developed by:"
     },
     "AuthContext": {
-      "loading": "Preparing workspace"
+      "loading": "Preparing workspace",
+      "toasts": {
+        "tokenError": {
+          "title": "Failed to sync your session",
+          "description": "Try refreshing the page."
+        },
+        "logoutError": {
+          "title": "Failed to sign out",
+          "description": "Please check your connection and try again."
+        }
+      }
     },
     "SchemaEditor": {
       "loadingSchema": "Loading saved schema..."
@@ -114,7 +124,7 @@
         "description": "Enter your email and create a password",
         "alreadyHaveAccount": "Already have an account?",
         "signInLink": "Sign In",
-        "toastSuccess": "Account Created!.",
+        "toastSuccess": "Account Created!",
         "toastDescription": "Welcome to Swagger Editor."
       },
       "login": {
@@ -147,7 +157,7 @@
         "authFailedTitle": "Authentication Failed",
         "loginFailedTitle": "Login Failed",
         "unexpectedError": "An unexpected error occurred.",
-        "toastError": "Registration Failed",
+        "registrationError": "Registration Failed",
         "emailInUse": "This email address is already registered.",
         "badlyFormattedEmail": "The email address is badly formatted.",
         "weakPassword": "The password is too weak."

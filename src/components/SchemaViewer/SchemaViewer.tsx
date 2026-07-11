@@ -58,6 +58,7 @@ export default function SchemaViewer() {
                         key={tag.name}
                         tag={tag}
                         baseUrl={sortedSchema.servers?.[0]?.url ?? ''}
+                        components={parsedSpec?.components}
                       />
                     ))}
                 </div>

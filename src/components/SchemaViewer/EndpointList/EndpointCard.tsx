@@ -2,13 +2,15 @@ import { Accordion, AccordionContent } from '@/components/ui/accordion';
 import { ApiOperationTag } from '../utils/sortedSchema';
 import EndpointItem from './EndpointItem';
 import { AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import type { OpenAPIV3 } from '@scalar/openapi-types';
 
 interface EndpointCardProps {
   tag: ApiOperationTag;
   baseUrl: string;
+  components?: OpenAPIV3.ComponentsObject;
 }
 
-export default function EndpointCard({ tag, baseUrl }: EndpointCardProps) {
+export default function EndpointCard({ tag, baseUrl, components }: EndpointCardProps) {
   return (
     <Accordion type="single" defaultValue={tag.name} collapsible>
       <AccordionItem value={tag.name}>
@@ -22,6 +24,7 @@ export default function EndpointCard({ tag, baseUrl }: EndpointCardProps) {
               <EndpointItem
                 key={`${operation.method}-${operation.path}`}
                 operation={operation}
+                components={components}
                 baseUrl={baseUrl}
               />
             ))}

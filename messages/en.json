@@ -73,7 +73,8 @@
         "generate": "Generate URL",
         "status": "Status",
         "responseHeaders": "Response Headers",
-        "responseBody": "Response Body"
+        "responseBody": "Response Body",
+        "networkError": "Network Error"
       }
     }
   },

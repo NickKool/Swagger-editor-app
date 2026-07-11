@@ -24,6 +24,7 @@ export default function TryItPanel({ operation, baseUrl }: TryItPanelProps) {
   const [body, setBody] = useState('');
   const [result, setResult] = useState<ProxyResult | null>(null);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const t = useTranslations('components.EndpointItem.tryIt');
 
@@ -62,14 +63,45 @@ export default function TryItPanel({ operation, baseUrl }: TryItPanelProps) {
   };
 
   const execute = async () => {
+    setError(null);
+    setResult(null);
+
     const { url, headers } = buildRequest();
 
-    const res = await fetch('/api/proxy', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, method: operation.method, body, headers }),
-    });
-    setResult(await res.json());
+    const method = operation.method.toUpperCase();
+    const canHaveBody = method !== 'GET' && method !== 'HEAD';
+
+    const requestHeaders = { ...headers };
+    if (canHaveBody && body && !requestHeaders['Content-Type']) {
+      requestHeaders['Content-Type'] = 'application/json';
+    }
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: requestHeaders,
+        body: canHaveBody && body ? body : undefined,
+      });
+
+      const text = await res.text();
+      let parsedBody: unknown = null;
+      if (text) {
+        try {
+          parsedBody = JSON.parse(text);
+        } catch {
+          parsedBody = text;
+        }
+      }
+
+      setResult({
+        status: res.status,
+        statusText: res.statusText,
+        headers: Object.fromEntries(res.headers.entries()),
+        body: parsedBody,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Request failed');
+    }
   };
 
   const copyCurl = async () => {
@@ -117,6 +149,12 @@ export default function TryItPanel({ operation, baseUrl }: TryItPanelProps) {
           {copied ? t('copied') : t('generate')}
         </Button>
       </div>
+
+      {error && (
+        <p className="text-xs text-destructive">
+          {t('networkError')}: {error}
+        </p>
+      )}
 
       {result && (
         <div className="space-y-2">

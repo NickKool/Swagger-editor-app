@@ -13,7 +13,7 @@ export default function AboutPage() {
   const t = useTranslations('pages.AboutPage');
 
   return (
-    <div className="container max-w-5xl mx-auto py-10 px-4 space-y-12">
+    <div className="flex-1 container max-w-5xl mx-auto py-10 px-4 space-y-12">
       <section className="text-center space-y-4">
         <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">{t('aboutProject')}</h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">{t('aboutDescription')}</p>

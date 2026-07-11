@@ -14,7 +14,9 @@
       "signUp": "Зарегестрироваться",
       "about": "О нас",
       "history": "История",
-      "signOut": "Выйти"
+      "signOut": "Выйти",
+      "language": "Язык:",
+      "hamburgerMenu": "Мобильное меню"
     },
     "Footer": {
       "about": "О нас",

@@ -39,7 +39,7 @@ export default function LanguageSelector() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2 h-9 unselectable" disabled={isPending}>
-          <Languages className="h-4 w-4 text-muted-foreground" />
+          <Languages className="h-4 w-4" />
           <span className="hidden sm:inline">
             {isPending ? (
               <Loader className="h-8 w-8 animate-spin text-primary" />

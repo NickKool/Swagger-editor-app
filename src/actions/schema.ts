@@ -28,8 +28,7 @@ export async function fetchSchema(userId: string): Promise<SchemaDocument | null
       } as SchemaDocument;
     }
     return null;
-  } catch (error: unknown) {
-    console.error('Server Fetch Error:', error);
+  } catch {
     return null;
   }
 }

@@ -11,6 +11,8 @@ export default function FormatToggleButton() {
 
   const format = useOpenApiSchemaStore((state) => state.format);
   const isValid = useOpenApiSchemaStore((state) => state.isValid);
+  const isLoading = useOpenApiSchemaStore((state) => state.isLoading);
+  const isSaving = useOpenApiSchemaStore((state) => state.isSaving);
   const toggleFormat = useOpenApiSchemaStore((state) => state.toggleFormat);
 
   return (
@@ -24,7 +26,7 @@ export default function FormatToggleButton() {
         size="icon-lg"
         variant="outline"
         className="rounded-l-none transition-opacity duration-200"
-        disabled={!isValid}
+        disabled={!isValid || isLoading || isSaving}
         onClick={() => toggleFormat()}
         title={t('title')}
       >

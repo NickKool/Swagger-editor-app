@@ -47,6 +47,20 @@
         }
       }
     },
+    "SyncSchemaButton": {
+      "title": "Sync Schema",
+      "toasts": {
+        "loading": "Syncing schema changes...",
+        "success": {
+          "title": "Schema synchronized!",
+          "description": "Your API schema configuration has been synchronized."
+        },
+        "error": {
+          "title": "Syncing failed",
+          "description": "An unexpected server error occurred."
+        }
+      }
+    },
     "FormatToggleButton": {
       "title": "Toggle Format"
     }
@@ -54,7 +68,6 @@
   "stores": {
     "OpenAPISchema": {
       "errors": {
-        "fetchFailed": "Fetch schema failed.",
         "empty": "Specification cannot be empty.",
         "conversionFailed": "Failed to parse syntax for conversion.",
         "invalidStructure": "Schema structure validation failed.",

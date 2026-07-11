@@ -11,10 +11,15 @@ export interface OpenApiSchemaStoreState {
   error: LocalizedError | null;
   parsedSpec: OpenAPI.Document | null;
   hasInitialized: boolean;
+  isSynced: boolean;
   isLoading: boolean;
+  isSaving: boolean;
 
-  initializeSchema: (authLoading: boolean, uid?: string) => Promise<void>;
-  setSpec: (newSpec: string) => Promise<void>;
+  setUnsynced: () => void;
+
+  initializeSchema: (authLoading: boolean, uid?: string, force?: boolean) => Promise<void>;
+  saveCurrentSchema: (uid: string) => Promise<void>;
+  setSpec: (newSpec: string, synced?: boolean) => Promise<void>;
   toggleFormat: () => void;
   validateAndParseSpec: () => Promise<void>;
 }

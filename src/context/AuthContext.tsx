@@ -46,7 +46,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [t]);
 
   const logout = async () => {
     try {

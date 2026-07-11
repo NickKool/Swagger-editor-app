@@ -38,20 +38,36 @@ const fillParams = () => {
   });
 };
 
+interface MockResponseInit {
+  status: number;
+  statusText: string;
+  headersEntries: [string, string][];
+  bodyText: string;
+}
+
+function createMockResponse({ status, statusText, headersEntries, bodyText }: MockResponseInit) {
+  const headersMap = new Map(headersEntries);
+  return {
+    status,
+    statusText,
+    headers: { entries: () => headersMap.entries() },
+    text: () => Promise.resolve(bodyText),
+  };
+}
+
 describe('TryItPanel', () => {
   beforeEach(() => {
     vi.stubGlobal(
       'fetch',
       vi.fn(() =>
-        Promise.resolve({
-          json: () =>
-            Promise.resolve({
-              status: 200,
-              statusText: 'OK',
-              headers: { 'content-type': 'application/json' },
-              body: { ok: true },
-            }),
-        }),
+        Promise.resolve(
+          createMockResponse({
+            status: 200,
+            statusText: 'OK',
+            headersEntries: [['content-type', 'application/json']],
+            bodyText: JSON.stringify({ ok: true }),
+          }),
+        ),
       ) as unknown as typeof fetch,
     );
     Object.defineProperty(navigator, 'clipboard', {
@@ -82,7 +98,7 @@ describe('TryItPanel', () => {
     expect(document.querySelector('textarea')).not.toBeInTheDocument();
   });
 
-  test('builds the request from parameters and renders the proxy result', async () => {
+  test('builds the request from parameters and renders the fetch result', async () => {
     render(<TryItPanel operation={operation} baseUrl={baseUrl} />);
     fillParams();
 
@@ -91,13 +107,12 @@ describe('TryItPanel', () => {
     await waitFor(() => expect(screen.getByText(/status/)).toBeInTheDocument());
 
     const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>;
-    const call = fetchMock.mock.calls[0];
-    const payload = JSON.parse(call[1].body as string);
+    const [url, options] = fetchMock.mock.calls[0] as [string, RequestInit];
 
-    expect(payload.url).toBe('https://api.example.com/users/42?q=term');
-    expect(payload.headers['X-Token']).toBe('secret');
-    expect(payload.headers['Cookie']).toBe('session=abc');
-    expect(payload.method).toBe('post');
+    expect(url).toBe('https://api.example.com/users/42?q=term');
+    expect(options.method).toBe('POST');
+    expect((options.headers as Record<string, string>)['X-Token']).toBe('secret');
+    expect((options.headers as Record<string, string>)['Cookie']).toBe('session=abc');
 
     expect(screen.getByText(/200/)).toBeInTheDocument();
     expect(screen.getByText(/"ok": true/)).toBeInTheDocument();
@@ -107,15 +122,14 @@ describe('TryItPanel', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(() =>
-        Promise.resolve({
-          json: () =>
-            Promise.resolve({
-              status: 500,
-              statusText: 'Error',
-              headers: {},
-              body: 'raw text body',
-            }),
-        }),
+        Promise.resolve(
+          createMockResponse({
+            status: 500,
+            statusText: 'Error',
+            headersEntries: [],
+            bodyText: 'raw text body',
+          }),
+        ),
       ) as unknown as typeof fetch,
     );
 
@@ -123,6 +137,18 @@ describe('TryItPanel', () => {
     fireEvent.click(screen.getByText('execute'));
 
     await waitFor(() => expect(screen.getByText('raw text body')).toBeInTheDocument());
+  });
+
+  test('shows a network error message when fetch rejects', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.reject(new Error('Failed to fetch'))) as unknown as typeof fetch,
+    );
+
+    render(<TryItPanel operation={operation} baseUrl={baseUrl} />);
+    fireEvent.click(screen.getByText('execute'));
+
+    await waitFor(() => expect(screen.getByText(/Failed to fetch/)).toBeInTheDocument());
   });
 
   test('copies a curl command and toggles the copied label back after a delay', async () => {

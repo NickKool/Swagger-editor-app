@@ -1,13 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { vi, describe, test, expect, beforeEach } from 'vitest';
+import { vi, describe, test, expect } from 'vitest';
 import type { OpenAPIV3 } from '@scalar/openapi-types';
 
 import EndpointItem from './EndpointItem';
-import getExamples from '../utils/getExamples';
 import type { ApiOperation } from '../utils/sortedSchema';
-
-vi.mock('../utils/getExamples', () => ({ default: vi.fn() }));
-const mockGetExamples = vi.mocked(getExamples);
 
 vi.mock('./TryItPanel', () => ({
   default: vi.fn(({ operation, baseUrl }: { operation: ApiOperation; baseUrl: string }) => (
@@ -43,10 +39,6 @@ const fullOperation: ApiOperation = {
 };
 
 describe('EndpointItem', () => {
-  beforeEach(() => {
-    mockGetExamples.mockReturnValue([{ name: 'Sample', value: { foo: 'bar' } }]);
-  });
-
   test('renders header (badge, path, summary) collapsed, without body content', () => {
     render(<EndpointItem operation={fullOperation} baseUrl={baseUrl} />);
 
@@ -69,11 +61,19 @@ describe('EndpointItem', () => {
     expect(screen.getByText('✕')).toBeInTheDocument();
 
     expect(screen.getByText('*')).toBeInTheDocument();
-    expect(screen.getByText('tabs.example')).toBeInTheDocument();
+
+    const exampleTabs = screen.getAllByText('tabs.example');
+    const schemaTabs = screen.getAllByText('tabs.schema');
+    expect(exampleTabs).toHaveLength(2);
+    expect(schemaTabs).toHaveLength(2);
+
+    expect(screen.getAllByText('{}').length).toBeGreaterThan(0);
+
+    schemaTabs.forEach((tab) => fireEvent.focus(tab));
+    expect(screen.getAllByText(/"type":\s*"object"/).length).toBeGreaterThan(0);
 
     expect(screen.getByText('200')).toBeInTheDocument();
     expect(screen.getByText('204')).toBeInTheDocument();
-    expect(screen.getAllByText(/"type": "object"/).length).toBeGreaterThan(0);
 
     expect(screen.getByTestId('try-it-panel')).toHaveTextContent(
       'post-/users/{id}-https://api.example.com',
@@ -81,7 +81,6 @@ describe('EndpointItem', () => {
   });
 
   test('omits optional sections when data is absent', () => {
-    mockGetExamples.mockReturnValue([]);
     const minimal: ApiOperation = { path: '/ping', method: 'get', parameters: [], responses: {} };
 
     render(<EndpointItem operation={minimal} baseUrl={baseUrl} />);

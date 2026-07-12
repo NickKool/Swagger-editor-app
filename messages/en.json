@@ -100,7 +100,9 @@
         "status": "Status",
         "responseHeaders": "Response Headers",
         "responseBody": "Response Body",
-        "networkError": "Network Error"
+        "networkError": "Network Error",
+        "toastErrorTitle": "Analytics Sync Failed",
+        "toastErrorDesc": "Unable to save request metrics to history dashboard."
       }
     }
   },
@@ -197,6 +199,8 @@
         "message": "You haven't made any API requests yet.",
         "workspaceLink": "Go to Workspace"
       },
+      "toastError": "Analytics Sync Failed",
+      "toastErrorDescription": "Unable to save request metrics to history dashboard.",
       "table": {
         "timestamp": "Timestamp",
         "method": "Method",

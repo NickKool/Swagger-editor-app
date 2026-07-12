@@ -46,7 +46,7 @@ export default function SignInPage() {
       setEmailError(t('errors.invalidEmail'));
     }
     if (!isPasswordFilled) {
-      setPasswordError(t('errors.requiredPassword') || 'Password is required.');
+      setPasswordError(t('errors.requiredPassword'));
     }
 
     if (!isEmailValid || !isPasswordFilled) return;

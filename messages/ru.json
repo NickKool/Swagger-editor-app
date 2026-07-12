@@ -100,7 +100,9 @@
         "status": "Статус",
         "responseHeaders": "Заголовки ответа",
         "responseBody": "Тело ответа",
-        "networkError": "Ошибка сети"
+        "networkError": "Ошибка сети",
+        "toastErrorTitle": "Ошибка синхронизации",
+        "toastErrorDesc": "Не удалось сохранить метрики запроса в историю."
       }
     }
   },

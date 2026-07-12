@@ -33,7 +33,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       if (currentUser) {
         try {
           const token = await currentUser.getIdToken();
-          document.cookie = `auth-token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax; Secure`;
+          document.cookie = `auth-token=${encodeURIComponent(token)}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax; Secure`;
         } catch {
           toast.error(t('toasts.tokenError.title'), {
             description: t('toasts.tokenError.description'),

@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
+import { logApiRequest } from '@/lib/analytics';
+import { HistoryRecord } from '@/types/analytics';
 
 interface TryItPanelProps {
   operation: ApiOperation;
@@ -68,7 +70,7 @@ export default function TryItPanel({ operation, baseUrl }: TryItPanelProps) {
 
     const { url, headers } = buildRequest();
 
-    const method = operation.method.toUpperCase();
+    const method = operation.method.toUpperCase() as HistoryRecord['method'];
     const canHaveBody = method !== 'GET' && method !== 'HEAD';
 
     const requestHeaders = { ...headers };
@@ -76,12 +78,17 @@ export default function TryItPanel({ operation, baseUrl }: TryItPanelProps) {
       requestHeaders['Content-Type'] = 'application/json';
     }
 
+    const startTime = performance.now();
+
     try {
       const res = await fetch(url, {
         method,
         headers: requestHeaders,
         body: canHaveBody && body ? body : undefined,
       });
+
+      const endTime = performance.now();
+      const duration = Math.round(endTime - startTime);
 
       const text = await res.text();
       let parsedBody: unknown = null;
@@ -99,8 +106,39 @@ export default function TryItPanel({ operation, baseUrl }: TryItPanelProps) {
         headers: Object.fromEntries(res.headers.entries()),
         body: parsedBody,
       });
+
+      let errorDetails: string | undefined = undefined;
+      if (res.status >= 400) {
+        errorDetails = typeof parsedBody === 'string' ? parsedBody : JSON.stringify(parsedBody);
+      }
+
+      await logApiRequest({
+        method,
+        url,
+        statusCode: res.status,
+        duration,
+        requestBody: canHaveBody && body ? body : null,
+        responseBody: text,
+        errorDetails,
+        t,
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Request failed');
+      const endTime = performance.now();
+      const duration = Math.round(endTime - startTime);
+
+      const errorMessage = err instanceof Error ? err.message : 'Request failed';
+      setError(errorMessage);
+
+      await logApiRequest({
+        method,
+        url,
+        statusCode: 0,
+        duration,
+        requestBody: canHaveBody && body ? body : null,
+        responseBody: null,
+        errorDetails: errorMessage,
+        t,
+      });
     }
   };
 

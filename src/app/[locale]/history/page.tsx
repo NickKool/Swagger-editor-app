@@ -1,6 +1,6 @@
 import React from 'react';
-
 import { getTranslations } from 'next-intl/server';
+import { cookies } from 'next/headers';
 import { Link } from '@/i18n/navigation';
 import { HistoryRecord } from '@/types/analytics';
 
@@ -16,44 +16,125 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-export async function getMockHistoryRecords(): Promise<HistoryRecord[]> {
-  return [
-    // {
-    //   id: 'rec-1',
-    //   userId: 'user-123',
-    //   timestamp: Date.now() - 5000,
-    //   method: 'GET',
-    //   url: 'https://swagger-editor.com',
-    //   statusCode: 200,
-    //   duration: 145,
-    //   requestSize: 240,
-    //   responseSize: 1024,
-    // },
-    // {
-    //   id: 'rec-2',
-    //   userId: 'user-123',
-    //   timestamp: Date.now() - 600000,
-    //   method: 'POST',
-    //   url: 'https://swagger-editor.com',
-    //   statusCode: 400,
-    //   duration: 320,
-    //   requestSize: 1450,
-    //   responseSize: 180,
-    //   errorDetails: 'Invalid syntax at line 14: core property "info" is missing.',
-    // },
-    // {
-    //   id: 'rec-3',
-    //   userId: 'user-123',
-    //   timestamp: Date.now() - 3600000,
-    //   method: 'DELETE',
-    //   url: 'https://swagger-editor.com',
-    //   statusCode: 404,
-    //   duration: 98,
-    //   requestSize: 0,
-    //   responseSize: 64,
-    //   errorDetails: 'Pet with specified identifier not found in cluster database.',
-    // }
-  ];
+function getUserIdFromToken(token: string): string | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    const payloadJson = Buffer.from(parts[1], 'base64').toString('utf-8');
+    const payload = JSON.parse(payloadJson) as { sub?: string; user_id?: string };
+
+    return payload.user_id || payload.sub || null;
+  } catch {
+    return null;
+  }
+}
+
+import https from 'https';
+
+export async function getRealHistoryRecords(userId: string): Promise<HistoryRecord[]> {
+  try {
+    const targetProjectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'swagger-editor-openapi';
+
+    const path =
+      '/v1/projects/' + targetProjectId.trim() + '/databases/(default)/documents/history';
+
+    return new Promise((resolve) => {
+      const options = {
+        hostname: 'firestore.googleapis.com',
+        port: 443,
+        path: path,
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        agent: new https.Agent({ rejectUnauthorized: false }),
+      };
+
+      const req = https.request(options, (res) => {
+        let rawData = '';
+        res.on('data', (chunk) => {
+          rawData += chunk;
+        });
+
+        res.on('end', () => {
+          if (res.statusCode !== 200) {
+            return resolve([]);
+          }
+
+          try {
+            const data = JSON.parse(rawData) as {
+              documents?: Array<{
+                name: string;
+                fields?: {
+                  userId?: { stringValue?: string };
+                  timestamp?: { integerValue?: string; doubleValue?: number };
+                  method?: { stringValue?: string };
+                  url?: { stringValue?: string };
+                  statusCode?: { integerValue?: string; doubleValue?: number };
+                  duration?: { integerValue?: string; doubleValue?: number };
+                  requestSize?: { integerValue?: string; doubleValue?: number };
+                  responseSize?: { integerValue?: string; doubleValue?: number };
+                  errorDetails?: { stringValue?: string };
+                };
+              }>;
+            };
+
+            if (!data.documents || !Array.isArray(data.documents)) return resolve([]);
+
+            const getNum = (
+              field: { integerValue?: string; doubleValue?: number } | undefined,
+            ): number => {
+              if (!field) return 0;
+              if (field.doubleValue !== undefined) return field.doubleValue;
+              if (field.integerValue !== undefined) return Number(field.integerValue);
+              return 0;
+            };
+
+            const records: HistoryRecord[] = [];
+
+            for (const doc of data.documents) {
+              const f = doc.fields;
+              if (!f) continue;
+
+              const docUserId = f.userId?.stringValue || '';
+
+              if (docUserId === userId) {
+                const id = doc.name.split('/').pop() || '';
+
+                records.push({
+                  id,
+                  userId: docUserId,
+                  timestamp: getNum(f.timestamp),
+                  method: (f.method?.stringValue || 'GET') as HistoryRecord['method'],
+                  url: f.url?.stringValue || '',
+                  statusCode: getNum(f.statusCode),
+                  duration: getNum(f.duration),
+                  requestSize: getNum(f.requestSize),
+                  responseSize: getNum(f.responseSize),
+                  ...(f.errorDetails?.stringValue
+                    ? { errorDetails: f.errorDetails.stringValue }
+                    : {}),
+                });
+              }
+            }
+
+            resolve(records);
+          } catch {
+            resolve([]);
+          }
+        });
+      });
+
+      req.on('error', () => {
+        resolve([]);
+      });
+
+      req.end();
+    });
+  } catch {
+    return [];
+  }
 }
 
 interface HistoryPageProps {
@@ -65,7 +146,17 @@ export default async function HistoryPage({ params }: HistoryPageProps) {
 
   const t = await getTranslations('pages.History');
 
-  const rawRecords = await getMockHistoryRecords();
+  const cookieStore = await cookies();
+  const rawToken = cookieStore.get('auth-token')?.value;
+
+  const token = rawToken ? decodeURIComponent(rawToken) : null;
+
+  let userId = '';
+  if (token) {
+    userId = getUserIdFromToken(token) || '';
+  }
+
+  const rawRecords = userId ? await getRealHistoryRecords(userId) : [];
 
   const sortedRecords = [...rawRecords].sort((a, b) => b.timestamp - a.timestamp);
 

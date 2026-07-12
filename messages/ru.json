@@ -40,9 +40,7 @@
     },
     "SchemaViewer": {
       "errorTitle": "Ошибка схемы",
-      "schemaReserveTitle": "Пример API",
       "schemaVersion": "Версия: {version}",
-      "schemaPathsDetected": "Путей обнаружено: {paths}",
       "schemaWaiting": "Ожидание действительной схемы конфигурации OpenAPI..."
     },
     "SaveSchemaButton": {
@@ -75,6 +73,35 @@
     },
     "FormatToggleButton": {
       "title": "Переключить формат"
+    },
+    "EndpointItem": {
+      "table": {
+        "name": "Имя",
+        "type": "Тип",
+        "required": "Обязателен",
+        "description": "Описание"
+      },
+      "requestBody": "Тело запроса",
+      "responses": "Ответы",
+      "tabs": {
+        "schema": "Схема",
+        "example": "Пример"
+      },
+      "paramLocation": {
+        "path": "Path-параметры",
+        "query": "Query-параметры",
+        "header": "Headers",
+        "cookie": "Cookie"
+      },
+      "tryIt": {
+        "execute": "Выполнить",
+        "copied": "Скопировано!",
+        "generate": "Сгенерировать URL",
+        "status": "Статус",
+        "responseHeaders": "Заголовки ответа",
+        "responseBody": "Тело ответа",
+        "networkError": "Ошибка сети"
+      }
     }
   },
   "stores": {

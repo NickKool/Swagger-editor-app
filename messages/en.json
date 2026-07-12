@@ -40,9 +40,7 @@
     },
     "SchemaViewer": {
       "errorTitle": "Schema Error",
-      "schemaReserveTitle": "API Reference",
       "schemaVersion": "Version: {version}",
-      "schemaPathsDetected": "Paths detected: {paths}",
       "schemaWaiting": "Waiting for a valid OpenAPI configuration schema..."
     },
     "SaveSchemaButton": {
@@ -75,6 +73,35 @@
     },
     "FormatToggleButton": {
       "title": "Toggle Format"
+    },
+    "EndpointItem": {
+      "table": {
+        "name": "Name",
+        "type": "Type",
+        "required": "Required",
+        "description": "Description"
+      },
+      "requestBody": "Request body",
+      "responses": "Responses",
+      "tabs": {
+        "schema": "Schema",
+        "example": "Example"
+      },
+      "paramLocation": {
+        "path": "Path parameters",
+        "query": "Query parameters",
+        "header": "Headers",
+        "cookie": "Cookie"
+      },
+      "tryIt": {
+        "execute": "Execute",
+        "copied": "Copied!",
+        "generate": "Generate URL",
+        "status": "Status",
+        "responseHeaders": "Response Headers",
+        "responseBody": "Response Body",
+        "networkError": "Network Error"
+      }
     }
   },
   "stores": {

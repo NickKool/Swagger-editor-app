@@ -52,7 +52,7 @@ export default function proxy(request: NextRequest) {
 
   if (!authToken && cleanPath === '/history') {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = `/${currentLocale}/sign-in`;
+    redirectUrl.pathname = `/${currentLocale}`;
     return NextResponse.redirect(redirectUrl);
   }
 

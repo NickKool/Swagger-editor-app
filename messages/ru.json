@@ -14,23 +14,33 @@
       "signUp": "Зарегестрироваться",
       "about": "О нас",
       "history": "История",
-      "signOut": "Выйти"
+      "signOut": "Выйти",
+      "language": "Язык:",
+      "hamburgerMenu": "Мобильное меню"
     },
     "Footer": {
       "about": "О нас",
       "developed": "Разработан:"
     },
     "AuthContext": {
-      "loading": "Подготовка рабочего места"
+      "loading": "Подготовка рабочего места",
+      "toasts": {
+        "tokenError": {
+          "title": "Не удалось синхронизировать сессию",
+          "description": "Попробуйте обновить страницу."
+        },
+        "logoutError": {
+          "title": "Не удалось выйти из аккаунта",
+          "description": "Проверьте интернет-соединение и повторите попытку."
+        }
+      }
     },
     "SchemaEditor": {
       "loadingSchema": "Загрузка сохраненной схемы..."
     },
     "SchemaViewer": {
       "errorTitle": "Ошибка схемы",
-      "schemaReserveTitle": "Пример API",
       "schemaVersion": "Версия: {version}",
-      "schemaPathsDetected": "Путей обнаружено: {paths}",
       "schemaWaiting": "Ожидание действительной схемы конфигурации OpenAPI..."
     },
     "SaveSchemaButton": {
@@ -47,14 +57,56 @@
         }
       }
     },
+    "SyncSchemaButton": {
+      "title": "Синхронизовать схему",
+      "toasts": {
+        "loading": "Синхронизация изменений схемы...",
+        "success": {
+          "title": "Схема синхронизирована!",
+          "description": "Конфигурация вашей схемы API синхронизирована."
+        },
+        "error": {
+          "title": "Ошибка синхронизации",
+          "description": "Произошла непредвиденная ошибка сервера."
+        }
+      }
+    },
     "FormatToggleButton": {
       "title": "Переключить формат"
+    },
+    "EndpointItem": {
+      "table": {
+        "name": "Имя",
+        "type": "Тип",
+        "required": "Обязателен",
+        "description": "Описание"
+      },
+      "requestBody": "Тело запроса",
+      "responses": "Ответы",
+      "tabs": {
+        "schema": "Схема",
+        "example": "Пример"
+      },
+      "paramLocation": {
+        "path": "Path-параметры",
+        "query": "Query-параметры",
+        "header": "Headers",
+        "cookie": "Cookie"
+      },
+      "tryIt": {
+        "execute": "Выполнить",
+        "copied": "Скопировано!",
+        "generate": "Сгенерировать URL",
+        "status": "Статус",
+        "responseHeaders": "Заголовки ответа",
+        "responseBody": "Тело ответа",
+        "networkError": "Ошибка сети"
+      }
     }
   },
   "stores": {
     "OpenAPISchema": {
       "errors": {
-        "fetchFailed": "Не удалось получить схему.",
         "empty": "Спецификация не может быть пустой.",
         "conversionFailed": "Не удалось разобрать синтаксис для конвертации.",
         "invalidStructure": "Ошибка валидации структуры схемы.",
@@ -99,7 +151,8 @@
         "description": "Введите вашу почту и придумайте пароль",
         "alreadyHaveAccount": "Уже есть аккаунт?",
         "signInLink": "Войти",
-        "toastSuccess": "Successfully authenticated."
+        "toastSuccess": "Учетная запись создана!",
+        "toastDescription": "Добро пожаловать в редактор Swagger."
       },
       "login": {
         "title": "С возвращением",
@@ -131,6 +184,7 @@
         "authFailedTitle": "Ошибка аутентификации",
         "loginFailedTitle": "Ошибка входа",
         "unexpectedError": "Произошла непредвиденная ошибка.",
+        "registrationError": "Ошибка регистрации",
         "emailInUse": "Этот адрес электронной почты уже зарегистрирован.",
         "badlyFormattedEmail": "Неверный формат адреса электронной почты.",
         "weakPassword": "Пароль слишком слабый."

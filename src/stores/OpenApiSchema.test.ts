@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { validate, dereference } from '@scalar/openapi-parser';
 import { useOpenApiSchemaStore } from './OpenApiSchema';
-import { fetchSchema } from '@/actions/schema';
+import { fetchSchema, saveSchema } from '@/actions/schema';
 import { OpenAPI } from '@scalar/openapi-types';
 import YAML from 'yaml';
 
@@ -12,6 +12,7 @@ vi.mock('@scalar/openapi-parser', () => ({
 
 vi.mock('@/actions/schema', () => ({
   fetchSchema: vi.fn(),
+  saveSchema: vi.fn(),
 }));
 
 vi.mock('@/constants/open-api', () => ({
@@ -19,7 +20,7 @@ vi.mock('@/constants/open-api', () => ({
 }));
 
 type ValidateResult = Awaited<ReturnType<typeof validate>>;
-type DereferenceResult = Awaited<ReturnType<typeof validate>>;
+type DereferenceResult = Awaited<ReturnType<typeof dereference>>;
 
 const MOCK_VALIDATE_SUCCESS_RESULT: ValidateResult = {
   valid: true,
@@ -57,6 +58,7 @@ describe('useOpenApiSchemaStore', () => {
     vi.mocked(validate).mockReset();
     vi.mocked(dereference).mockReset();
     vi.mocked(fetchSchema).mockReset();
+    vi.mocked(saveSchema).mockReset();
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
     useOpenApiSchemaStore.setState({
@@ -64,9 +66,11 @@ describe('useOpenApiSchemaStore', () => {
       format: 'yaml',
       isValid: true,
       error: null,
-      parsedSpec: null,
+      parsedSpec: { openapi: '3.0.0' } as OpenAPI.Document,
       hasInitialized: false,
+      isSynced: false,
       isLoading: false,
+      isSaving: false,
     });
   });
 
@@ -82,6 +86,14 @@ describe('useOpenApiSchemaStore', () => {
     expect(state.format).toBe('yaml');
     expect(state.isValid).toBe(true);
     expect(state.error).toBeNull();
+    expect(state.isSynced).toBe(false);
+    expect(state.isSaving).toBe(false);
+  });
+
+  it('should set state to unsynced when setUnsynced is called', () => {
+    useOpenApiSchemaStore.setState({ isSynced: true });
+    useOpenApiSchemaStore.getState().setUnsynced();
+    expect(useOpenApiSchemaStore.getState().isSynced).toBe(false);
   });
 
   it('should initialize with default spec when no uid is provided', async () => {
@@ -102,16 +114,7 @@ describe('useOpenApiSchemaStore', () => {
     expect(vi.mocked(fetchSchema)).toHaveBeenCalledWith('schema-123');
     expect(state.spec).toBe('openapi: 3.1.0');
     expect(state.hasInitialized).toBe(true);
-  });
-
-  it('should set default schema when fetched schema document lacks raw text', async () => {
-    vi.mocked(fetchSchema).mockResolvedValue(MOCK_SCHEMA_DOCUMENT);
-
-    await useOpenApiSchemaStore.getState().initializeSchema(false, 'schema-empty');
-
-    const state = useOpenApiSchemaStore.getState();
-    expect(state.spec).toBe('openapi: 3.1.0');
-    expect(state.hasInitialized).toBe(true);
+    expect(state.isSynced).toBe(true);
   });
 
   it('should update error states and rethrow when initialization API fails', async () => {
@@ -124,10 +127,6 @@ describe('useOpenApiSchemaStore', () => {
     const state = useOpenApiSchemaStore.getState();
     expect(state.isValid).toBe(false);
     expect(state.hasInitialized).toBe(true);
-    expect(state.error).toEqual({
-      key: 'errors.fetchFailed',
-      fallback: 'Network failure',
-    });
   });
 
   it('should stop initialization routine when auth conditions are loading', async () => {
@@ -137,9 +136,18 @@ describe('useOpenApiSchemaStore', () => {
     expect(state.hasInitialized).toBe(false);
   });
 
+  it('should respect the force parameter during schema initialization', async () => {
+    useOpenApiSchemaStore.setState({ hasInitialized: true });
+    vi.mocked(fetchSchema).mockResolvedValue(MOCK_SCHEMA_DOCUMENT);
+
+    await useOpenApiSchemaStore.getState().initializeSchema(false, 'schema-123', true);
+
+    const state = useOpenApiSchemaStore.getState();
+    expect(state.spec).toBe('openapi: 3.1.0');
+  });
+
   it('should detect yaml format and set spec target values', async () => {
     vi.mocked(validate).mockResolvedValue(MOCK_VALIDATE_SUCCESS_RESULT);
-
     vi.mocked(dereference).mockResolvedValue({
       schema: { openapi: '3.1.0' } as OpenAPI.Document,
     });
@@ -152,7 +160,6 @@ describe('useOpenApiSchemaStore', () => {
 
   it('should detect json format when string begins with brackets', async () => {
     vi.mocked(validate).mockResolvedValue(MOCK_VALIDATE_SUCCESS_RESULT);
-
     vi.mocked(dereference).mockResolvedValue({
       schema: {} as OpenAPI.Document,
     });
@@ -170,9 +177,24 @@ describe('useOpenApiSchemaStore', () => {
     expect(useOpenApiSchemaStore.getState().format).toBe('json');
   });
 
+  it('should preserve isSynced when text changes and no synced param is passed', async () => {
+    useOpenApiSchemaStore.setState({ isSynced: true, spec: 'old: spec' });
+
+    await useOpenApiSchemaStore.getState().setSpec('new: spec');
+
+    expect(useOpenApiSchemaStore.getState().isSynced).toBe(true);
+  });
+
+  it('should preserve synced state when text changes but explicit synced value is provided', async () => {
+    useOpenApiSchemaStore.setState({ isSynced: false, spec: 'old: spec' });
+
+    await useOpenApiSchemaStore.getState().setSpec('new: spec', true);
+
+    expect(useOpenApiSchemaStore.getState().isSynced).toBe(true);
+  });
+
   it('should initialize with default schema when auth is not loading and uid is missing', async () => {
     vi.mocked(validate).mockResolvedValue(MOCK_VALIDATE_SUCCESS_RESULT);
-
     vi.mocked(dereference).mockResolvedValue({
       schema: { openapi: '3.0.0' },
     } as DereferenceResult);
@@ -262,6 +284,7 @@ describe('useOpenApiSchemaStore', () => {
     const state = useOpenApiSchemaStore.getState();
     expect(state.format).toBe('json');
     expect(JSON.parse(state.spec)).toEqual({ title: 'Test App' });
+    expect(state.isSynced).toBe(false);
   });
 
   it('should convert content profiles during toggle format switches from json to yaml', () => {
@@ -276,10 +299,11 @@ describe('useOpenApiSchemaStore', () => {
     });
 
     useOpenApiSchemaStore.getState().toggleFormat();
-
     const state = useOpenApiSchemaStore.getState();
+
     expect(state.format).toBe('yaml');
     expect(YAML.parse(state.spec)).toEqual({ title: 'Test App' });
+    expect(state.isSynced).toBe(false);
   });
 
   it('should skip structural conversion changes when schema is invalid', () => {
@@ -310,8 +334,8 @@ describe('useOpenApiSchemaStore', () => {
     });
 
     useOpenApiSchemaStore.getState().toggleFormat();
-
     const state = useOpenApiSchemaStore.getState();
+
     expect(state.isValid).toBe(false);
     expect(state.error?.key).toBe('errors.conversionFailed');
   });
@@ -332,24 +356,19 @@ describe('useOpenApiSchemaStore', () => {
     });
 
     useOpenApiSchemaStore.getState().toggleFormat();
-
     const state = useOpenApiSchemaStore.getState();
+
     expect(state.isValid).toBe(false);
     expect(state.error?.fallback).toBe('Syntax error');
-    vi.restoreAllMocks();
   });
 
   it('should fallback to default schema when fetched schema document lacks raw text', async () => {
-    const mockEmptySchemaDocument = {
-      ...MOCK_SCHEMA_DOCUMENT,
-      rawText: '',
-    };
-
+    const mockEmptySchemaDocument = { ...MOCK_SCHEMA_DOCUMENT, rawText: '' };
     vi.mocked(fetchSchema).mockResolvedValue(mockEmptySchemaDocument);
 
     await useOpenApiSchemaStore.getState().initializeSchema(false, 'schema-empty');
-
     const state = useOpenApiSchemaStore.getState();
+
     expect(state.spec).toBe('openapi: 3.0.0');
     expect(state.hasInitialized).toBe(true);
   });
@@ -362,8 +381,71 @@ describe('useOpenApiSchemaStore', () => {
     ).rejects.toBe('Fatal database disconnection string');
 
     const state = useOpenApiSchemaStore.getState();
+
     expect(state.isValid).toBe(false);
     expect(state.hasInitialized).toBe(true);
-    expect(state.error?.fallback).toBe('Failed to fetch schema');
+  });
+
+  it('should successfully save current schema and toggle synced states', async () => {
+    vi.mocked(saveSchema).mockResolvedValue();
+
+    await useOpenApiSchemaStore.getState().saveCurrentSchema('user-123');
+    const state = useOpenApiSchemaStore.getState();
+
+    expect(vi.mocked(saveSchema)).toHaveBeenCalledWith({
+      userId: 'user-123',
+      spec: 'openapi: 3.0.0',
+      format: 'yaml',
+      parsedSpec: { openapi: '3.0.0' },
+    });
+
+    expect(state.isSynced).toBe(true);
+    expect(state.isSaving).toBe(false);
+  });
+
+  it('should abort schema saving if schema structure states are invalid', async () => {
+    useOpenApiSchemaStore.setState({ isValid: false });
+
+    await useOpenApiSchemaStore.getState().saveCurrentSchema('user-123');
+
+    expect(vi.mocked(saveSchema)).not.toHaveBeenCalled();
+    expect(useOpenApiSchemaStore.getState().isSaving).toBe(false);
+  });
+
+  it('should abort schema saving if parsedSpec instance reference is missing', async () => {
+    useOpenApiSchemaStore.setState({ parsedSpec: null });
+
+    await useOpenApiSchemaStore.getState().saveCurrentSchema('user-123');
+
+    expect(vi.mocked(saveSchema)).not.toHaveBeenCalled();
+  });
+
+  it('should abort schema saving if saving background tasks are already running', async () => {
+    useOpenApiSchemaStore.setState({ isSaving: true });
+
+    await useOpenApiSchemaStore.getState().saveCurrentSchema('user-123');
+
+    expect(vi.mocked(saveSchema)).not.toHaveBeenCalled();
+  });
+
+  it('should rethrow exceptions and reset loading states if save API fails', async () => {
+    vi.mocked(saveSchema).mockRejectedValue(new Error('Firebase network write block'));
+
+    await expect(useOpenApiSchemaStore.getState().saveCurrentSchema('user-123')).rejects.toThrow(
+      'Firebase network write block',
+    );
+
+    expect(useOpenApiSchemaStore.getState().isSaving).toBe(false);
+    expect(useOpenApiSchemaStore.getState().isSynced).toBe(false);
+  });
+
+  it('should format message properly and throw customized error when saveSchema rejects with a plain string', async () => {
+    vi.mocked(saveSchema).mockRejectedValue('Database disconnected');
+
+    await expect(useOpenApiSchemaStore.getState().saveCurrentSchema('user-123')).rejects.toThrow(
+      'Schema save failed: Database disconnected',
+    );
+
+    expect(useOpenApiSchemaStore.getState().isSaving).toBe(false);
   });
 });

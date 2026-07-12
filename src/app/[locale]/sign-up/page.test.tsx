@@ -214,7 +214,7 @@ describe('SignUpPage Component Workflow', () => {
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        'pages.Auth.errors.toastError',
+        'pages.Auth.errors.registrationError',
         expect.objectContaining({
           description: 'Server isolated error.',
           position: 'top-center',
@@ -240,7 +240,7 @@ describe('SignUpPage Component Workflow', () => {
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
-        'pages.Auth.errors.toastError',
+        'pages.Auth.errors.registrationError',
         expect.objectContaining({
           description: 'Network runtime exception',
           position: 'top-center',

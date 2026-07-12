@@ -86,18 +86,13 @@ describe('Schema Server Actions', () => {
       expect(result).toBeNull();
     });
 
-    it('should handle runtime database errors, log an error message, and return null', async () => {
+    it('should return null on database error', async () => {
       const mockError = new Error('Firestore connection loss');
       vi.mocked(getDoc).mockRejectedValueOnce(mockError);
 
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
       const result = await fetchSchema(mockUserId);
 
-      expect(consoleSpy).toHaveBeenCalledWith('Server Fetch Error:', mockError);
       expect(result).toBeNull();
-
-      consoleSpy.mockRestore();
     });
   });
 

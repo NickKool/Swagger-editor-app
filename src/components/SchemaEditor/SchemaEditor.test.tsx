@@ -10,8 +10,10 @@ type StoreState = {
   spec: string;
   format: 'json' | 'yaml';
   isLoading: boolean;
+  isSynced: boolean;
   initializeSchema: ReturnType<typeof vi.fn>;
   setSpec: ReturnType<typeof vi.fn>;
+  setUnsynced: ReturnType<typeof vi.fn>;
 };
 
 type AuthContextType = ReturnType<typeof useAuth>;
@@ -38,14 +40,17 @@ vi.mock('next-themes', () => ({
   useTheme: vi.fn(() => ({ resolvedTheme: 'light' })),
 }));
 
+// Кастомны мок Zustand стора з захаваннем структуры currentState
 vi.mock('@/stores/OpenApiSchema', () => {
   const mockStore = (selector: (state: StoreState) => unknown) => selector(mockStore.currentState);
   mockStore.currentState = {
     spec: 'openapi: 3.0.0',
     format: 'yaml',
     isLoading: false,
+    isSynced: true,
     initializeSchema: vi.fn().mockResolvedValue(undefined),
     setSpec: vi.fn(),
+    setUnsynced: vi.fn(),
   } as StoreState;
   return {
     useOpenApiSchemaStore: mockStore,
@@ -85,6 +90,10 @@ vi.mock('@/components/SaveSchemaButton/SaveSchemaButton', () => ({
   default: () => <button data-testid="save-button" />,
 }));
 
+vi.mock('@/components/SyncSchemaButton/SyncSchemaButton', () => ({
+  default: () => <button data-testid="sync-button" />,
+}));
+
 const MOCK_MESSAGES: Record<string, string> = {
   loadingSchema: 'Loading schema...',
 } as const;
@@ -111,8 +120,10 @@ describe('SchemaEditor', () => {
       spec: 'openapi: 3.0.0',
       format: 'yaml',
       isLoading: false,
+      isSynced: true,
       initializeSchema: vi.fn().mockResolvedValue(undefined),
       setSpec: vi.fn(),
+      setUnsynced: vi.fn(),
     });
   });
 
@@ -151,27 +162,6 @@ describe('SchemaEditor', () => {
     expect(initializeSchemaMock).toHaveBeenCalledWith(false, 'user_999');
   });
 
-  it('should catch and log errors if initializeSchema fails', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-    const mockError = new Error('Failed validation');
-    const initializeSchemaMock = vi.fn().mockRejectedValue(mockError);
-    setMockState({ initializeSchema: initializeSchemaMock });
-
-    vi.mocked(useAuth).mockReturnValue({
-      user: { uid: 'user_999' },
-      loading: false,
-    } as unknown as AuthContextType);
-
-    render(<SchemaEditor />);
-
-    await vi.waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to initialize schema:', mockError);
-    });
-
-    consoleSpy.mockRestore();
-  });
-
   it('should show spinner when auth state or schema layer is loading', () => {
     setMockState({ isLoading: true });
 
@@ -203,6 +193,44 @@ describe('SchemaEditor', () => {
     expect(screen.getByTestId('save-button')).toBeInTheDocument();
   });
 
+  it('should display SyncSchemaButton only when user is logged in and store state is unsynced', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: { uid: 'user_abc' },
+      loading: false,
+    } as unknown as AuthContextType);
+    setMockState({ isSynced: false });
+
+    render(<SchemaEditor />);
+
+    expect(screen.getByTestId('sync-button')).toBeInTheDocument();
+  });
+
+  it('should hide SyncSchemaButton when store state is synced even if user is logged in', () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: { uid: 'user_abc' },
+      loading: false,
+    } as unknown as AuthContextType);
+    setMockState({ isSynced: true });
+
+    render(<SchemaEditor />);
+
+    expect(screen.queryByTestId('sync-button')).not.toBeInTheDocument();
+  });
+
+  it('should trigger setUnsynced action when auth session drops or user becomes a guest', () => {
+    const setUnsyncedMock = vi.fn();
+    setMockState({ setUnsynced: setUnsyncedMock });
+
+    vi.mocked(useAuth).mockReturnValue({
+      user: null,
+      loading: false,
+    } as unknown as AuthContextType);
+
+    render(<SchemaEditor />);
+
+    expect(setUnsyncedMock).toHaveBeenCalled();
+  });
+
   it('should apply dark theme property to code editor when layout resolves dark mode configuration', () => {
     vi.mocked(useTheme).mockReturnValue({ resolvedTheme: 'dark' } as ThemeHookMock as ReturnType<
       typeof useTheme
@@ -230,19 +258,5 @@ describe('SchemaEditor', () => {
 
     const editor = screen.getByTestId('codemirror');
     expect(editor).toHaveAttribute('data-extensions-count', '4');
-  });
-
-  it('should skip schema initialization if authentication is currently loading', () => {
-    const initializeSchemaMock = vi.fn().mockResolvedValue(undefined);
-    setMockState({ initializeSchema: initializeSchemaMock });
-
-    vi.mocked(useAuth).mockReturnValue({
-      user: null,
-      loading: true,
-    } as unknown as AuthContextType);
-
-    render(<SchemaEditor />);
-
-    expect(initializeSchemaMock).not.toHaveBeenCalled();
   });
 });

@@ -14,23 +14,33 @@
       "signUp": "Sign Up",
       "about": "About Us",
       "history": "History",
-      "signOut": "Sign Out"
+      "signOut": "Sign Out",
+      "language": "Language:",
+      "hamburgerMenu": "Mobile Menu"
     },
     "Footer": {
       "about": "About Us",
       "developed": "Developed by:"
     },
     "AuthContext": {
-      "loading": "Preparing workspace"
+      "loading": "Preparing workspace",
+      "toasts": {
+        "tokenError": {
+          "title": "Failed to sync your session",
+          "description": "Try refreshing the page."
+        },
+        "logoutError": {
+          "title": "Failed to sign out",
+          "description": "Please check your connection and try again."
+        }
+      }
     },
     "SchemaEditor": {
       "loadingSchema": "Loading saved schema..."
     },
     "SchemaViewer": {
       "errorTitle": "Schema Error",
-      "schemaReserveTitle": "API Reference",
       "schemaVersion": "Version: {version}",
-      "schemaPathsDetected": "Paths detected: {paths}",
       "schemaWaiting": "Waiting for a valid OpenAPI configuration schema..."
     },
     "SaveSchemaButton": {
@@ -47,14 +57,56 @@
         }
       }
     },
+    "SyncSchemaButton": {
+      "title": "Sync Schema",
+      "toasts": {
+        "loading": "Syncing schema changes...",
+        "success": {
+          "title": "Schema synchronized!",
+          "description": "Your API schema configuration has been synchronized."
+        },
+        "error": {
+          "title": "Syncing failed",
+          "description": "An unexpected server error occurred."
+        }
+      }
+    },
     "FormatToggleButton": {
       "title": "Toggle Format"
+    },
+    "EndpointItem": {
+      "table": {
+        "name": "Name",
+        "type": "Type",
+        "required": "Required",
+        "description": "Description"
+      },
+      "requestBody": "Request body",
+      "responses": "Responses",
+      "tabs": {
+        "schema": "Schema",
+        "example": "Example"
+      },
+      "paramLocation": {
+        "path": "Path parameters",
+        "query": "Query parameters",
+        "header": "Headers",
+        "cookie": "Cookie"
+      },
+      "tryIt": {
+        "execute": "Execute",
+        "copied": "Copied!",
+        "generate": "Generate URL",
+        "status": "Status",
+        "responseHeaders": "Response Headers",
+        "responseBody": "Response Body",
+        "networkError": "Network Error"
+      }
     }
   },
   "stores": {
     "OpenAPISchema": {
       "errors": {
-        "fetchFailed": "Fetch schema failed.",
         "empty": "Specification cannot be empty.",
         "conversionFailed": "Failed to parse syntax for conversion.",
         "invalidStructure": "Schema structure validation failed.",
@@ -99,7 +151,7 @@
         "description": "Enter your email and create a password",
         "alreadyHaveAccount": "Already have an account?",
         "signInLink": "Sign In",
-        "toastSuccess": "Account Created!.",
+        "toastSuccess": "Account Created!",
         "toastDescription": "Welcome to Swagger Editor."
       },
       "login": {
@@ -132,7 +184,7 @@
         "authFailedTitle": "Authentication Failed",
         "loginFailedTitle": "Login Failed",
         "unexpectedError": "An unexpected error occurred.",
-        "toastError": "Registration Failed",
+        "registrationError": "Registration Failed",
         "emailInUse": "This email address is already registered.",
         "badlyFormattedEmail": "The email address is badly formatted.",
         "weakPassword": "The password is too weak."

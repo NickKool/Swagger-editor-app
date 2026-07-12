@@ -2,13 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { AlertCircle, Check, Loader, Save } from 'lucide-react';
+import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { useOpenApiSchemaStore } from '@/stores/OpenApiSchema';
 import { useAuth } from '@/context/AuthContext';
-import { saveSchema } from '@/actions/schema';
-import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
 
 type SaveStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -23,9 +22,10 @@ export default function SaveSchemaButton() {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const isValid = useOpenApiSchemaStore((state) => state.isValid);
-  const spec = useOpenApiSchemaStore((state) => state.spec);
-  const format = useOpenApiSchemaStore((state) => state.format);
+  const isLoading = useOpenApiSchemaStore((state) => state.isLoading);
+  const isSaving = useOpenApiSchemaStore((state) => state.isSaving);
   const parsedSpec = useOpenApiSchemaStore((state) => state.parsedSpec);
+  const saveCurrentSchema = useOpenApiSchemaStore((state) => state.saveCurrentSchema);
 
   useEffect(() => {
     return () => {
@@ -45,14 +45,7 @@ export default function SaveSchemaButton() {
 
     setStatus('loading');
 
-    const savePromise = saveSchema({
-      userId: user.uid,
-      spec,
-      format,
-      parsedSpec,
-    });
-
-    toast.promise(savePromise, {
+    toast.promise(saveCurrentSchema(user.uid), {
       loading: t('toasts.loading'),
       position: 'top-center',
       success: () => {
@@ -67,7 +60,6 @@ export default function SaveSchemaButton() {
         };
       },
       error: (err: unknown) => {
-        console.error('Firebase save error:', err);
         setStatus('error');
         timeoutRef.current = setTimeout(() => {
           setStatus('idle');
@@ -91,7 +83,7 @@ export default function SaveSchemaButton() {
     <Button
       size="icon-lg"
       onClick={handleSave}
-      disabled={!isValid || !user || status === 'loading'}
+      disabled={!isValid || !user || status === 'loading' || isLoading || isSaving}
       variant={getVariant()}
       className="transition-all duration-300"
       title={t('title')}

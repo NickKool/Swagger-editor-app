@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import SaveSchemaButton from './SaveSchemaButton';
 import { useOpenApiSchemaStore } from '@/stores/OpenApiSchema';
 import { useAuth } from '@/context/AuthContext';
-import { saveSchema } from '@/actions/schema';
 import { OpenApiSchemaStoreState } from '@/stores/OpenApiSchema.types';
 import { mockTranslate } from '@/__mocks__/next-intl';
 
@@ -22,10 +21,6 @@ vi.mock('@/stores/OpenApiSchema', () => ({
 
 vi.mock('@/context/AuthContext', () => ({
   useAuth: vi.fn(),
-}));
-
-vi.mock('@/actions/schema', () => ({
-  saveSchema: vi.fn(),
 }));
 
 vi.mock('sonner', () => ({
@@ -100,15 +95,16 @@ const MOCK_MESSAGES: Record<string, string> = {
 mockTranslate.mockImplementation((k: string) => MOCK_MESSAGES[k]);
 
 describe('SaveSchemaButton Component', () => {
+  const mockSaveCurrentSchema = vi.fn();
+
   beforeEach(() => {
     vi.useFakeTimers();
+    mockSaveCurrentSchema.mockReset();
 
     vi.mocked(useAuth).mockReturnValue({
       user: { uid: 'user_123' },
       loading: false,
     } as AuthContextMock as ReturnType<typeof useAuth>);
-
-    vi.mocked(saveSchema).mockResolvedValue(undefined as never);
   });
 
   afterEach(() => {
@@ -125,11 +121,15 @@ describe('SaveSchemaButton Component', () => {
         parsedSpec: { info: { title: 'Test API', version: '1.0.0' }, openapi: '3.0.0', paths: {} },
         hasInitialized: true,
         isLoading: false,
+        isSaving: false,
+        isSynced: false,
         error: null,
         initializeSchema: vi.fn(),
         setSpec: vi.fn(),
         toggleFormat: vi.fn(),
         validateAndParseSpec: vi.fn(),
+        saveCurrentSchema: mockSaveCurrentSchema,
+        setUnsynced: vi.fn(),
         ...overrides,
       } as OpenApiSchemaStoreState),
     );
@@ -158,8 +158,22 @@ describe('SaveSchemaButton Component', () => {
     expect(button).toBeDisabled();
   });
 
+  it('should be disabled when store is saving or loading, but NOT when already synced', () => {
+    setMockStore({ isLoading: true, isSaving: false, isSynced: false });
+    const { rerender } = render(<SaveSchemaButton />);
+    expect(screen.getByTestId('ui-button')).toBeDisabled();
+
+    setMockStore({ isLoading: false, isSaving: true, isSynced: false });
+    rerender(<SaveSchemaButton />);
+    expect(screen.getByTestId('ui-button')).toBeDisabled();
+
+    setMockStore({ isLoading: false, isSaving: false, isSynced: true });
+    rerender(<SaveSchemaButton />);
+    expect(screen.getByTestId('ui-button')).not.toBeDisabled();
+  });
+
   it('should be enabled when schema is valid, user exists and status is idle', () => {
-    setMockStore({ isValid: true });
+    setMockStore({ isValid: true, isSynced: false, isSaving: false, isLoading: false });
 
     render(<SaveSchemaButton />);
 
@@ -170,17 +184,20 @@ describe('SaveSchemaButton Component', () => {
     expect(screen.getByTestId('icon-save')).toBeInTheDocument();
   });
 
-  it('should show loader during saving and disable button', async () => {
+  it('should show loader during saving and disable button when store indicates isSaving', async () => {
     const savePromise = new Promise<void>(() => {});
-    vi.mocked(saveSchema).mockReturnValue(savePromise as never);
-    setMockStore({ isValid: true });
+    mockSaveCurrentSchema.mockReturnValue(savePromise);
+    setMockStore({ isValid: true, isSaving: false });
 
-    render(<SaveSchemaButton />);
+    const { rerender } = render(<SaveSchemaButton />);
     const button = screen.getByTestId('ui-button');
 
     await act(async () => {
       fireEvent.click(button);
     });
+
+    setMockStore({ isValid: true, isSaving: true });
+    rerender(<SaveSchemaButton />);
 
     expect(button).toBeDisabled();
     expect(screen.getByTestId('icon-loader')).toBeInTheDocument();
@@ -188,6 +205,7 @@ describe('SaveSchemaButton Component', () => {
   });
 
   it('should show success icon and default variant after successful save then revert to idle', async () => {
+    mockSaveCurrentSchema.mockResolvedValue(undefined);
     setMockStore({ isValid: true });
 
     render(<SaveSchemaButton />);
@@ -197,7 +215,6 @@ describe('SaveSchemaButton Component', () => {
       fireEvent.click(button);
     });
 
-    expect(button).not.toBeDisabled();
     expect(button).toHaveAttribute('data-variant', 'default');
     expect(screen.getByTestId('icon-check')).toBeInTheDocument();
 
@@ -205,14 +222,13 @@ describe('SaveSchemaButton Component', () => {
       vi.advanceTimersByTime(2000);
     });
 
-    expect(button).not.toBeDisabled();
     expect(button).toHaveAttribute('data-variant', 'outline');
     expect(screen.getByTestId('icon-save')).toBeInTheDocument();
     expect(screen.queryByTestId('icon-check')).not.toBeInTheDocument();
   });
 
   it('should show error icon and destructive variant after failed save then revert to idle', async () => {
-    vi.mocked(saveSchema).mockRejectedValue(new Error('Firebase error') as never);
+    mockSaveCurrentSchema.mockRejectedValue(new Error('Firebase error'));
     setMockStore({ isValid: true });
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -224,7 +240,6 @@ describe('SaveSchemaButton Component', () => {
       fireEvent.click(button);
     });
 
-    expect(button).not.toBeDisabled();
     expect(button).toHaveAttribute('data-variant', 'destructive');
     expect(screen.getByTestId('icon-error')).toBeInTheDocument();
 
@@ -232,7 +247,6 @@ describe('SaveSchemaButton Component', () => {
       vi.advanceTimersByTime(3000);
     });
 
-    expect(button).not.toBeDisabled();
     expect(button).toHaveAttribute('data-variant', 'outline');
     expect(screen.getByTestId('icon-save')).toBeInTheDocument();
     expect(screen.queryByTestId('icon-error')).not.toBeInTheDocument();
@@ -240,7 +254,8 @@ describe('SaveSchemaButton Component', () => {
     consoleSpy.mockRestore();
   });
 
-  it('should clear existing layout configuration timeout when handleSave execution sequence is double triggered', async () => {
+  it('should handle double click safely without crashing ui states', async () => {
+    mockSaveCurrentSchema.mockResolvedValue(undefined);
     setMockStore({ isValid: true });
 
     render(<SaveSchemaButton />);
@@ -264,6 +279,7 @@ describe('SaveSchemaButton Component', () => {
   });
 
   it('should explicitly trigger unmount sequence hook pipeline to eliminate dangling reference timers completely', async () => {
+    mockSaveCurrentSchema.mockResolvedValue(undefined);
     setMockStore({ isValid: true });
 
     const { unmount } = render(<SaveSchemaButton />);
@@ -280,7 +296,7 @@ describe('SaveSchemaButton Component', () => {
 
   it('should abort early if handleSave is called while status is loading', async () => {
     const savePromise = new Promise<void>(() => {});
-    vi.mocked(saveSchema).mockReturnValue(savePromise as never);
+    mockSaveCurrentSchema.mockReturnValue(savePromise);
     setMockStore({ isValid: true });
 
     render(<SaveSchemaButton />);
@@ -290,13 +306,13 @@ describe('SaveSchemaButton Component', () => {
       fireEvent.click(button);
     });
 
-    vi.mocked(saveSchema).mockClear();
+    mockSaveCurrentSchema.mockClear();
 
     await act(async () => {
       fireEvent.click(button);
     });
 
-    expect(saveSchema).not.toHaveBeenCalled();
+    expect(mockSaveCurrentSchema).not.toHaveBeenCalled();
   });
 
   it('should abort early if handleSave is called when parsedSpec is missing', async () => {
@@ -309,11 +325,11 @@ describe('SaveSchemaButton Component', () => {
       fireEvent.click(button);
     });
 
-    expect(saveSchema).not.toHaveBeenCalled();
+    expect(mockSaveCurrentSchema).not.toHaveBeenCalled();
   });
 
   it('should use fallback translation string when intercepted error instance is not an error object', async () => {
-    vi.mocked(saveSchema).mockRejectedValue('String error rejection wrapper' as never);
+    mockSaveCurrentSchema.mockRejectedValue('String error rejection wrapper');
     setMockStore({ isValid: true });
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});

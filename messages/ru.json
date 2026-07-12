@@ -23,7 +23,17 @@
       "developed": "Разработан:"
     },
     "AuthContext": {
-      "loading": "Подготовка рабочего места"
+      "loading": "Подготовка рабочего места",
+      "toasts": {
+        "tokenError": {
+          "title": "Не удалось синхронизировать сессию",
+          "description": "Попробуйте обновить страницу."
+        },
+        "logoutError": {
+          "title": "Не удалось выйти из аккаунта",
+          "description": "Проверьте интернет-соединение и повторите попытку."
+        }
+      }
     },
     "SchemaEditor": {
       "loadingSchema": "Загрузка сохраненной схемы..."
@@ -114,7 +124,8 @@
         "description": "Введите вашу почту и придумайте пароль",
         "alreadyHaveAccount": "Уже есть аккаунт?",
         "signInLink": "Войти",
-        "toastSuccess": "Successfully authenticated."
+        "toastSuccess": "Учетная запись создана!",
+        "toastDescription": "Добро пожаловать в редактор Swagger."
       },
       "login": {
         "title": "С возвращением",
@@ -146,6 +157,7 @@
         "authFailedTitle": "Ошибка аутентификации",
         "loginFailedTitle": "Ошибка входа",
         "unexpectedError": "Произошла непредвиденная ошибка.",
+        "registrationError": "Ошибка регистрации",
         "emailInUse": "Этот адрес электронной почты уже зарегистрирован.",
         "badlyFormattedEmail": "Неверный формат адреса электронной почты.",
         "weakPassword": "Пароль слишком слабый."

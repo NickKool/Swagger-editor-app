@@ -5,6 +5,12 @@ import type { OpenAPIV3 } from '@scalar/openapi-types';
 import TryItPanel from './TryItPanel';
 import type { ApiOperation } from '../utils/sortedSchema';
 
+vi.mock('@/lib/analytics', () => ({
+  logApiRequest: vi.fn(() => Promise.resolve()),
+}));
+
+import { logApiRequest } from '@/lib/analytics';
+
 const baseUrl = 'https://api.example.com';
 
 const param = (overrides: Partial<OpenAPIV3.ParameterObject>): OpenAPIV3.ParameterObject => ({
@@ -74,6 +80,7 @@ describe('TryItPanel', () => {
       value: { writeText: vi.fn(() => Promise.resolve()) },
       configurable: true,
     });
+    vi.mocked(logApiRequest).mockClear();
   });
 
   afterEach(() => {
@@ -116,6 +123,15 @@ describe('TryItPanel', () => {
 
     expect(screen.getByText(/200/)).toBeInTheDocument();
     expect(screen.getByText(/"ok": true/)).toBeInTheDocument();
+
+    expect(logApiRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: 'POST',
+        url: 'https://api.example.com/users/42?q=term',
+        statusCode: 200,
+        duration: expect.any(Number),
+      }),
+    );
   });
 
   test('renders a string response body as-is', async () => {
@@ -137,6 +153,14 @@ describe('TryItPanel', () => {
     fireEvent.click(screen.getByText('execute'));
 
     await waitFor(() => expect(screen.getByText('raw text body')).toBeInTheDocument());
+
+    expect(logApiRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: 'POST',
+        statusCode: 500,
+        responseBody: 'raw text body',
+      }),
+    );
   });
 
   test('shows a network error message when fetch rejects', async () => {
@@ -149,6 +173,14 @@ describe('TryItPanel', () => {
     fireEvent.click(screen.getByText('execute'));
 
     await waitFor(() => expect(screen.getByText(/Failed to fetch/)).toBeInTheDocument());
+
+    expect(logApiRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: 'POST',
+        statusCode: 0,
+        errorDetails: 'Failed to fetch',
+      }),
+    );
   });
 
   test('copies a curl command and toggles the copied label back after a delay', async () => {

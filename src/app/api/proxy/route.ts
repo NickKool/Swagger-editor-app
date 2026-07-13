@@ -48,7 +48,14 @@ async function handler(req: NextRequest) {
   let body: string | undefined = undefined;
   if (hasBody) {
     try {
-      body = await req.text();
+      const contentType = req.headers.get('content-type');
+      const contentLength = req.headers.get('content-length');
+
+      if (contentLength === '0' || (!contentType && !contentLength)) {
+        body = undefined;
+      } else {
+        body = await req.text();
+      }
     } catch {
       return NextResponse.json(
         { error: 'Failed to read request body. Invalid or corrupted data.' },
@@ -83,7 +90,6 @@ async function handler(req: NextRequest) {
 
     return new NextResponse(responseBody, {
       status: targetResponse.status,
-      statusText: targetResponse.statusText,
       headers: responseHeaders,
     });
   } catch (error) {

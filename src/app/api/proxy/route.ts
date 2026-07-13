@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Заголовки, которые нельзя пробрасывать как есть (управляются самим fetch/Next.js)
 const FORBIDDEN_REQUEST_HEADERS = new Set([
   'host',
   'connection',
@@ -23,7 +22,6 @@ async function handler(req: NextRequest) {
     return NextResponse.json({ error: 'Missing "url" query parameter' }, { status: 400 });
   }
 
-  // Валидация URL, чтобы не проксировать мусор
   let parsedUrl: URL;
   try {
     parsedUrl = new URL(targetUrl);
@@ -35,7 +33,6 @@ async function handler(req: NextRequest) {
     return NextResponse.json({ error: 'Only http/https protocols are allowed' }, { status: 400 });
   }
 
-  // Собираем заголовки для проксируемого запроса
   const headers = new Headers();
   req.headers.forEach((value, key) => {
     if (!FORBIDDEN_REQUEST_HEADERS.has(key.toLowerCase())) {
@@ -43,7 +40,6 @@ async function handler(req: NextRequest) {
     }
   });
 
-  // Тело запроса (для GET/HEAD его нет)
   const method = req.method;
   const hasBody = !['GET', 'HEAD'].includes(method);
   const body = hasBody ? await req.text() : undefined;

@@ -78,10 +78,11 @@ export default function TryItPanel({ operation, baseUrl }: TryItPanelProps) {
       requestHeaders['Content-Type'] = 'application/json';
     }
 
+    const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
     const startTime = performance.now();
 
     try {
-      const res = await fetch(url, {
+      const res = await fetch(proxyUrl, {
         method,
         headers: requestHeaders,
         body: canHaveBody && body ? body : undefined,
@@ -98,6 +99,16 @@ export default function TryItPanel({ operation, baseUrl }: TryItPanelProps) {
         } catch {
           parsedBody = text;
         }
+      }
+
+      if (
+        res.status === 502 &&
+        parsedBody &&
+        typeof parsedBody === 'object' &&
+        'error' in (parsedBody as Record<string, unknown>)
+      ) {
+        const proxyError = parsedBody as { error: string; details?: string };
+        throw new Error(proxyError.details || proxyError.error);
       }
 
       setResult({

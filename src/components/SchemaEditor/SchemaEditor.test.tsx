@@ -40,7 +40,6 @@ vi.mock('next-themes', () => ({
   useTheme: vi.fn(() => ({ resolvedTheme: 'light' })),
 }));
 
-// Кастомны мок Zustand стора з захаваннем структуры currentState
 vi.mock('@/stores/OpenApiSchema', () => {
   const mockStore = (selector: (state: StoreState) => unknown) => selector(mockStore.currentState);
   mockStore.currentState = {

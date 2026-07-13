@@ -116,7 +116,9 @@ describe('TryItPanel', () => {
     const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>;
     const [url, options] = fetchMock.mock.calls[0] as [string, RequestInit];
 
-    expect(url).toBe('https://api.example.com/users/42?q=term');
+    expect(url).toBe(
+      `/api/proxy?url=${encodeURIComponent('https://api.example.com/users/42?q=term')}`,
+    );
     expect(options.method).toBe('POST');
     expect((options.headers as Record<string, string>)['X-Token']).toBe('secret');
     expect((options.headers as Record<string, string>)['Cookie']).toBe('session=abc');

@@ -1,0 +1,224 @@
+{
+  "components": {
+    "LanguageSelector": {
+      "selectLanguage": "Выбраць мову"
+    },
+    "ThemeSelector": {
+      "selectTheme": "Выбраць тэму",
+      "light": "Светлая",
+      "dark": "Цёмная",
+      "system": "Сістэмная"
+    },
+    "Header": {
+      "signIn": "Увайсці",
+      "signUp": "Зарэгістравацца",
+      "about": "Пра нас",
+      "history": "Гісторыя",
+      "signOut": "Выйсці",
+      "language": "Мова:",
+      "hamburgerMenu": "Мабільнае меню"
+    },
+    "Footer": {
+      "about": "Пра нас",
+      "developed": "Распрацавана:"
+    },
+    "AuthContext": {
+      "loading": "Падрыхтоўка працоўнай прасторы",
+      "toasts": {
+        "tokenError": {
+          "title": "Не ўдалося сінхранізаваць сесію",
+          "description": "Паспрабуйце абнавіць старонку."
+        },
+        "logoutError": {
+          "title": "Не ўдалося выйсці",
+          "description": "Калі ласка, праверце падключэнне і паспрабуйце зноў."
+        }
+      }
+    },
+    "SchemaEditor": {
+      "loadingSchema": "Загрузка захаванай схемы..."
+    },
+    "SchemaViewer": {
+      "errorTitle": "Памылка схемы",
+      "schemaVersion": "Версія: {version}",
+      "schemaWaiting": "Чаканне карэктнай схемы канфігурацыі OpenAPI..."
+    },
+    "SaveSchemaButton": {
+      "title": "Захаваць схему",
+      "toasts": {
+        "loading": "Захаванне змяненняў схемы...",
+        "success": {
+          "title": "Змяненні захаваны!",
+          "description": "Канфігурацыя вашай API-схемы абноўлена."
+        },
+        "error": {
+          "title": "Памылка захавання",
+          "description": "Адбылася неспадзяваная памылка сервера."
+        }
+      }
+    },
+    "SyncSchemaButton": {
+      "title": "Сінхранізаваць схему",
+      "toasts": {
+        "loading": "Сінхранізацыя змяненняў схемы...",
+        "success": {
+          "title": "Схема сінхранізавана!",
+          "description": "Канфігурацыя вашай API-схемы паспяхова сінхранізавана."
+        },
+        "error": {
+          "title": "Памылка сінхранізацыі",
+          "description": "Адбылася неспадзяваная памылка сервера."
+        }
+      }
+    },
+    "FormatToggleButton": {
+      "title": "Пераключыць фармат"
+    },
+    "EndpointItem": {
+      "table": {
+        "name": "Імя",
+        "type": "Тып",
+        "required": "Абавязкова",
+        "description": "Апісанне"
+      },
+      "requestBody": "Цела запыту",
+      "responses": "Адказы",
+      "tabs": {
+        "schema": "Схема",
+        "example": "Прыклад"
+      },
+      "paramLocation": {
+        "path": "Path-параметры",
+        "query": "Query-параметры",
+        "header": "Headers",
+        "cookie": "Cookie"
+      },
+      "tryIt": {
+        "execute": "Выканаць",
+        "copied": "Скапіявана!",
+        "generate": "Згенераваць URL",
+        "status": "Статус",
+        "responseHeaders": "Загалоўкі адказу",
+        "responseBody": "Цела адказу",
+        "networkError": "Памылка сеткі",
+        "toastErrorTitle": "Памылка сінхранізацыі аналітыкі",
+        "toastErrorDesc": "Не ўдалося захаваць метрыкі запыту ў панэль гісторыі."
+      }
+    }
+  },
+  "stores": {
+    "OpenAPISchema": {
+      "errors": {
+        "empty": "Спецыфікацыя не можа быць пустой.",
+        "conversionFailed": "Не ўдалося разабраць сінтаксіс для канвертацыі.",
+        "invalidStructure": "Праверка структуры схемы завяршылася няўдачай.",
+        "syntaxError": "Няправільнае фарматаванне або пашкоджаны сінтаксіс дакумента."
+      }
+    }
+  },
+  "pages": {
+    "NotFoundPage": {
+      "pageNotFound": "Старонка не знойдзена",
+      "notFoundDescription": "Старонка, якую вы шукаеце, не існуе, была перамешчана або часова недаступная.",
+      "goBack": "Назад",
+      "backToHome": "На галоўную"
+    },
+    "HomePage": {},
+    "AboutPage": {
+      "aboutProject": "Пра праект",
+      "aboutDescription": "Даведайцеся больш пра дадатак, курс RS School і каманду, якая стварыла гэты прадукт.",
+      "learning": "Навучанне",
+      "rsschoolCourse": "Курс RS School",
+      "rsschool": "RS School",
+      "rsschoolDescription": "— гэта бясплатная школа праграмавання, арганізаваная супольнасцю Rolling Scopes. Курс прапануе інтэнсіўнае навучанне з упорам на практычныя заданні, ментарскую падтрымку і камандную працу над рэальнымі праектамі.",
+      "rsschoolJoin": "Далучыцца да RS School",
+      "ourTeam": "Наша каманда",
+      "product": "Прадукт",
+      "projectDescription": "Апісанне праекта",
+      "swaggerEditorApp": "Swagger Editor App",
+      "swaggerEditorAppDescription": "— гэта інтэрактыўны рэдактар OpenAPI/Swagger і REST-кліент, створаны як фінальны камандны праект для курсу RS School React. Ён дазваляе карыстальнікам загружаць, правяраць і тэставаць схемы API у фарматах JSON або YAML у адзіным зручным інтэрфейсе.",
+      "team": {
+        "artsiomName": "Арцём Бельскі",
+        "artsiomContribution": "Налада CI/CD канвеераў, юніт-тэставанне, вёрстка кампанентаў, пераключэнне тэм, інтэрнацыяналізацыя і дынамічнае кіраванне схемамі на баку кліента.",
+        "alekseiName": "Аляксей Булаш",
+        "alekseiContribution": "Аркестрацыя жыццёвага цыкла Next.js, налада асяроддзя разгортвання, рэалізацыя праглядчыка схем, аўтаматызацыя рэпазіторыя і дызайн базавай разметкі UI.",
+        "nikolayName": "Мікалай Куляшэўскі",
+        "nikolayContribution": "Праектаванне архітэктуры базы даных, інтэграцыя воблачнай аўтэнтыфікацыі, стратэгіі валідацыі для рэгістрацыі карыстальнікаў і стандартызацыя працоўных працэсаў каманды."
+      },
+      "gitHubProfile": "Профіль GitHub"
+    },
+    "Auth": {
+      "register": {
+        "title": "Стварыць уліковы запіс",
+        "description": "Увядзіце вашу пошту і прыдумайце пароль",
+        "alreadyHaveAccount": "Ужо маеце ўліковы запіс?",
+        "signInLink": "Увайсці",
+        "toastSuccess": "Уліковы запіс створаны!",
+        "toastDescription": "Сардэчна запрашаем у Swagger Editor."
+      },
+      "login": {
+        "title": "З вяртаннем",
+        "description": "Увядзіце вашу пошту і пароль",
+        "dontHaveAccount": "Няма ўліковага запісу?",
+        "signUpLink": "Рэгістрацыя",
+        "toastSuccess": "Паспяховая аўтэнтыфікацыя."
+      },
+      "labels": {
+        "email": "Адрас электроннай пошты",
+        "password": "Пароль"
+      },
+      "placeholders": {
+        "email": "name@example.com",
+        "password": "••••••••"
+      },
+      "buttons": {
+        "register": "Рэгістрацыя",
+        "signIn": "Увайсці",
+        "processing": "Калі ласка, пачакайце..."
+      },
+      "errors": {
+        "invalidEmail": "Калі ласка, увядзіце карэктны адрас электроннай пошты (напрыклад, name@example.com).",
+        "invalidPassword": "Пароль павінен быць не менш за 8 сімвалаў і ўтрымліваць як мінімум адну вялікую літару, адну малую літару, адну лічбу і адзін спецыяльны сімвал.",
+        "requiredPassword": "Пароль абавязковы для запаўнення.",
+        "invalidCredentials": "Няправільная пошта або пароль. Паспрабуйце зноў.",
+        "accountLockedTitle": "Уліковы запіс часова заблакаваны",
+        "accountLockedDesc": "Зашмат няўдалых спроб уваходу. Паспрабуйце пазней.",
+        "authFailedTitle": "Памылка аўтэнтыфікацыі",
+        "loginFailedTitle": "Памылка ўваходу",
+        "unexpectedError": "Адбылася неспадзяваная памылка.",
+        "registrationError": "Памылка рэгістрацыі",
+        "emailInUse": "Гэты адрас электроннай пошты ўжо зарэгістраваны.",
+        "badlyFormattedEmail": "Няправільны фармат адрасу электроннай пошты.",
+        "weakPassword": "Пароль занадта слабы."
+      }
+    },
+    "History": {
+      "title": "Гісторыя API-запытаў і аналітыка",
+      "description": "Адсочвайце вашы мінулыя ўзаемадзеянні з API і метрыкі прадукцыйнасці",
+      "emptyState": {
+        "message": "Вы яшчэ не зрабілі ніводнага API-запыту.",
+        "workspaceLink": "Перайсці ў працоўную прастору"
+      },
+      "toastError": "Памылка сінхранізацыі аналітыкі",
+      "toastErrorDescription": "Не ўдалося захаваць метрыкі запыту ў панэль гісторыі.",
+      "table": {
+        "timestamp": "Час запыту",
+        "method": "Метад",
+        "url": "Канчатковы пункт / URL",
+        "statusCode": "Статус",
+        "duration": "Працягласць",
+        "requestSize": "Памер зап.",
+        "responseSize": "Памер адк.",
+        "details": "Аналітыка",
+        "viewDetails": "Падрабязней"
+      },
+      "analyticsModal": {
+        "title": "Падрабязная аналітыка",
+        "close": "Закрыць",
+        "success": "Паспяхова",
+        "failed": "Няўдала",
+        "errorDetails": "Падрабязнасці памылкі"
+      }
+    }
+  }
+}

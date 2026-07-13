@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PROJECT_TECHNOLOGIES, RS_SCHOOL_LINK, TEAM } from '@/constants/about';
 
+const AVATAR_BASE_URL = 'https://avatars.githubusercontent.com/u/';
+
 export default function AboutPage() {
   const t = useTranslations('pages.AboutPage');
 
@@ -76,12 +78,9 @@ export default function AboutPage() {
             <Card key={member.id} className="flex flex-col justify-between overflow-hidden">
               <CardHeader className="flex flex-row items-center gap-4">
                 <Avatar className="h-12 w-12 border" size="default">
-                  <AvatarImage
-                    asChild
-                    src={`https://avatars.githubusercontent.com/u/${member.githubAvatarId}`}
-                  >
+                  <AvatarImage asChild src={`${AVATAR_BASE_URL}${member.githubAvatarId}`}>
                     <Image
-                      src={`https://avatars.githubusercontent.com/u/${member.githubAvatarId}`}
+                      src={`${AVATAR_BASE_URL}${member.githubAvatarId}`}
                       alt={t(member.name)}
                       width={48}
                       height={48}

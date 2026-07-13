@@ -5,6 +5,7 @@ export const PROJECT_TECHNOLOGIES = [
   'Tailwind CSS',
   'shadcn/ui',
   'Tanstack',
+  'Zustand',
   'Firebase',
   'Vercel',
 ] as const;
@@ -15,7 +16,7 @@ export const TEAM = [
   {
     id: 1,
     name: 'team.artsiomName',
-    role: 'Developer',
+    role: 'Frontend Engineer & DevOps',
     githubAvatarId: '50047219',
     github: 'https://github.com/Thrapis',
     contribution: 'team.artsiomContribution',
@@ -23,7 +24,7 @@ export const TEAM = [
   {
     id: 2,
     name: 'team.alekseiName',
-    role: 'Team Lead',
+    role: 'Project Architect & Team Lead',
     githubAvatarId: '181670741',
     github: 'https://github.com/JesterAV',
     contribution: 'team.alekseiContribution',
@@ -31,7 +32,7 @@ export const TEAM = [
   {
     id: 3,
     name: 'team.nikolayName',
-    role: 'Developer',
+    role: 'Database & Backend Engineer',
     githubAvatarId: '218350964',
     github: 'https://github.com/NickKool',
     contribution: 'team.nikolayContribution',

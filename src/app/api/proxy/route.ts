@@ -50,7 +50,10 @@ async function handler(req: NextRequest) {
     try {
       body = await req.text();
     } catch {
-      return null;
+      return NextResponse.json(
+        { error: 'Failed to read request body. Invalid or corrupted data.' },
+        { status: 400 },
+      );
     }
   }
 

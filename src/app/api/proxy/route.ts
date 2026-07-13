@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 const FORBIDDEN_REQUEST_HEADERS = new Set([
   'host',
   'connection',
@@ -42,15 +44,28 @@ async function handler(req: NextRequest) {
 
   const method = req.method;
   const hasBody = !['GET', 'HEAD'].includes(method);
-  const body = hasBody ? await req.text() : undefined;
+
+  let body: string | undefined = undefined;
+  if (hasBody) {
+    try {
+      body = await req.text();
+    } catch {
+      return null;
+    }
+  }
 
   try {
-    const targetResponse = await fetch(parsedUrl.toString(), {
+    const fetchOptions: RequestInit = {
       method,
       headers,
-      body: body && body.length > 0 ? body : undefined,
       redirect: 'follow',
-    });
+    };
+
+    if (hasBody && body && body.length > 0) {
+      fetchOptions.body = body;
+    }
+
+    const targetResponse = await fetch(parsedUrl.toString(), fetchOptions);
 
     const responseHeaders = new Headers();
     targetResponse.headers.forEach((value, key) => {
@@ -58,6 +73,8 @@ async function handler(req: NextRequest) {
         responseHeaders.set(key, value);
       }
     });
+
+    responseHeaders.set('Cache-Control', 'no-store, max-age=0, must-revalidate');
 
     const responseBody = await targetResponse.arrayBuffer();
 

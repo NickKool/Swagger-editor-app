@@ -8,6 +8,10 @@ const FORBIDDEN_REQUEST_HEADERS = new Set([
   'content-length',
   'origin',
   'referer',
+  'forwarded',
+  'x-forwarded-for',
+  'x-forwarded-proto',
+  'x-forwarded-host',
 ]);
 
 const FORBIDDEN_RESPONSE_HEADERS = new Set([
@@ -15,56 +19,56 @@ const FORBIDDEN_RESPONSE_HEADERS = new Set([
   'content-length',
   'transfer-encoding',
   'connection',
+  'keep-alive',
+  'server',
 ]);
 
 async function handler(req: NextRequest) {
-  const targetUrl = req.nextUrl.searchParams.get('url');
-
-  if (!targetUrl) {
-    return NextResponse.json({ error: 'Missing "url" query parameter' }, { status: 400 });
-  }
-
-  let parsedUrl: URL;
   try {
-    parsedUrl = new URL(targetUrl);
-  } catch {
-    return NextResponse.json({ error: 'Invalid target URL' }, { status: 400 });
-  }
+    const targetUrl = req.nextUrl.searchParams.get('url');
 
-  if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
-    return NextResponse.json({ error: 'Only http/https protocols are allowed' }, { status: 400 });
-  }
-
-  const headers = new Headers();
-  req.headers.forEach((value, key) => {
-    if (!FORBIDDEN_REQUEST_HEADERS.has(key.toLowerCase())) {
-      headers.set(key, value);
+    if (!targetUrl) {
+      return NextResponse.json({ error: 'Missing "url" query parameter' }, { status: 400 });
     }
-  });
 
-  const method = req.method;
-  const hasBody = !['GET', 'HEAD'].includes(method);
-
-  let body: string | undefined = undefined;
-  if (hasBody) {
+    let parsedUrl: URL;
     try {
-      const contentType = req.headers.get('content-type');
-      const contentLength = req.headers.get('content-length');
-
-      if (contentLength === '0' || (!contentType && !contentLength)) {
-        body = undefined;
-      } else {
-        body = await req.text();
-      }
+      parsedUrl = new URL(targetUrl);
     } catch {
-      return NextResponse.json(
-        { error: 'Failed to read request body. Invalid or corrupted data.' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Invalid target URL' }, { status: 400 });
     }
-  }
 
-  try {
+    if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+      return NextResponse.json({ error: 'Only http/https protocols are allowed' }, { status: 400 });
+    }
+
+    const headers = new Headers();
+
+    if (req.headers && typeof req.headers.entries === 'function') {
+      for (const [key, value] of req.headers.entries()) {
+        if (!FORBIDDEN_REQUEST_HEADERS.has(key.toLowerCase())) {
+          headers.set(key, value);
+        }
+      }
+    }
+
+    const method = req.method;
+    const hasBody = !['GET', 'HEAD', 'OPTIONS'].includes(method);
+
+    if (!hasBody) {
+      headers.delete('content-type');
+      headers.delete('content-length');
+    }
+
+    let body: string | undefined = undefined;
+    if (hasBody) {
+      try {
+        body = await req.text();
+      } catch {
+        return NextResponse.json({ error: 'Failed to read request body.' }, { status: 400 });
+      }
+    }
+
     const fetchOptions: RequestInit = {
       method,
       headers,
@@ -78,11 +82,14 @@ async function handler(req: NextRequest) {
     const targetResponse = await fetch(parsedUrl.toString(), fetchOptions);
 
     const responseHeaders = new Headers();
-    targetResponse.headers.forEach((value, key) => {
-      if (!FORBIDDEN_RESPONSE_HEADERS.has(key.toLowerCase())) {
-        responseHeaders.set(key, value);
+
+    if (targetResponse.headers && typeof targetResponse.headers.entries === 'function') {
+      for (const [key, value] of targetResponse.headers.entries()) {
+        if (!FORBIDDEN_RESPONSE_HEADERS.has(key.toLowerCase())) {
+          responseHeaders.set(key, value);
+        }
       }
-    });
+    }
 
     responseHeaders.set('Cache-Control', 'no-store, max-age=0, must-revalidate');
 
@@ -95,7 +102,7 @@ async function handler(req: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       {
-        error: 'Failed to reach target server',
+        error: 'Proxy execution failed internally',
         details: error instanceof Error ? error.message : String(error),
       },
       { status: 502 },

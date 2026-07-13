@@ -139,11 +139,11 @@
       "swaggerEditorAppDescription": "is an interactive OpenAPI/Swagger editor and REST client built as a final team project for the RS School React course. It allows users to load, validate, and test API schemas in JSON or YAML formats within a single, unified interface.",
       "team": {
         "artsiomName": "Artsiom Belski",
-        "artsiomContribution": "Testing, CI Setup, I18n, UI components setup",
+        "artsiomContribution": "Setup of CI/CD pipelines, unit testing, component layout, theme switching, internationalization, and dynamic client-side schema management.",
         "alekseiName": "Aleksei Bulash",
-        "alekseiContribution": "Project Architecture, Project Setup, Evironment Setup",
+        "alekseiContribution": "Orchestration of the Next.js lifecycle, deployment environment setup, schema viewer implementation, repository automation, and base UI layout design.",
         "nikolayName": "Nikolay Kuliasheuski",
-        "nikolayContribution": "Database Design"
+        "nikolayContribution": "Database architecture design, integration of cloud authentication, validation strategies for user registration, and standardization of team workflows."
       },
       "gitHubProfile": "GitHub Profile"
     },

@@ -1,4 +1,4 @@
-'use server';
+'use client';
 
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import type { OpenAPI } from '@scalar/openapi-types';

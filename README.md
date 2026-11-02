@@ -2,7 +2,7 @@
 
 A web application combining a Swagger/OpenAPI UI with a REST client in a single interface. It allows users to paste, edit, and validate OpenAPI specifications (JSON/YAML), browse API endpoints, and execute requests against them directly in the browser.
 
-**Demo:** swagger-editor-app-fawn.netlify.app
+**Demo:** https://swagger-editor-app-fawn.netlify.app/
 
 ## Features
 
